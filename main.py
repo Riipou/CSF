@@ -63,7 +63,7 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
         for index in range(r):
             if index != x_index:
                 reste += U[i][index] * V[index][random_colonne]
-        d_inter_1 *= reste**3
+        d_inter_1 *= reste ** 3
         d_inter_2 *= reste
         d_inter_1 = d_inter_1 - d_inter_2
         d += d_inter_1
@@ -98,16 +98,19 @@ def coordinate_descent(max_iterations, M, U, V):
 
 
 def main():
+    """U = np.array([[1, 2],
+                  [3, 4],
+                  [5, 6]])
+    V = np.array([[1, 2, 3],
+                  [4, 5, 6]])"""
     # Rang
     r = 2
     # Nombre d'itérations maximum
     max_iterations = 10000
     # Matrice M
-    M = np.array([[4, 5, 2, 6],
-                  [9, 4, 5, 6],
-                  [4, 3, 6, 9],
-                  [10, 1, 6, 4],
-                  [1, 7, 9, 11]])
+    M = np.array([[81, 144, 225],
+                  [361, 676, 1089],
+                  [841, 1600, 2601]])
     # Génération des matrices U et V
     U, V = init_matrix(M, r)
     print("Matrice M :")
