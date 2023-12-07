@@ -1,8 +1,11 @@
 import math
 import numpy as np
+from sklearn.decomposition import NMF
+import time
 
 
 def roots_third_degree(a, b, c, d):
+    """ Prends 30 à 45% du temps d'éxecution, à optimiser"""
     # Définition des coefficients
     coefficients = [a, b, c, d]
     # Trouver les racines du polynomes
@@ -10,11 +13,17 @@ def roots_third_degree(a, b, c, d):
     return roots
 
 
-def init_matrix(M, r):
+def init_matrix(M, r, choice):
     # On entre M et on genere U et V de maniere random, plus tard il faudra voir si l'initialisation n'est pas plus
     # efficace en démarrant d'un autre point de départ, NMF ou autre
-    U = np.random.rand(M.shape[0], r)
-    V = np.random.rand(r, M.shape[1])
+    if choice == "random":
+        U = np.random.rand(M.shape[0], r)
+        V = np.random.rand(r, M.shape[1])
+    # tester svd plutot que NMF car pas forcement positif
+    elif choice == "NMF":
+        nmf = NMF(n_components=r)
+        U = nmf.fit_transform(M)
+        V = nmf.components_
     return U, V
 
 
@@ -23,11 +32,13 @@ def calculate_function(a, b, c, d, x):
 
 
 def quartic_function(M, U, V, x_index, random_colonne, r):
+    start_time = time.time()
     m, n = M.shape
     b = 0
     a = 0
     c = 0
     d = 0
+    # Calcul du "reste"
     # Calcul des coefficients pour une variable de V fixé
     for i in range(m):
         a += np.power(U[i][x_index], 4)
@@ -68,10 +79,13 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
         d_inter_1 = d_inter_1 - d_inter_2
         d += d_inter_1
     d *= 4
+    end_time = time.time()
+    #print(end_time-start_time)
     return a, b, c, d
 
 
 def optimise_v(M, U, V):
+    # repasser dans funct plusieurs fois
     m, n = V.shape
     for i in range(n):
         for j in range(m):
@@ -97,40 +111,31 @@ def coordinate_descent(max_iterations, M, U, V):
     return U, V
 
 
-def main():
-    """U = np.array([[1, 2],
-                  [3, 4],
-                  [5, 6]])
-    V = np.array([[1, 2, 3],
-                  [4, 5, 6]])"""
-    # Rang
-    r = 2
+def squared_factorisation():
     # Nombre d'itérations maximum
     max_iterations = 10000
-    # Matrice M
-    M = np.array([[81, 144, 225],
-                  [361, 676, 1089],
-                  [841, 1600, 2601]])
-    # Génération des matrices U et V
-    U, V = init_matrix(M, r)
-    print("Matrice M :")
-    for row in M:
-        print(row)
-    print("Matrice U initiale :")
-    for row in U:
-        print(row)
-    print("Matrice V initiale :")
-    for row in V:
-        print(row)
-    U, V = coordinate_descent(max_iterations, M, U, V)
-    print("Matrice U finale :")
-    for row in U:
-        print(row)
-    print("Matrice V finale :")
-    for row in V:
-        print(row)
-    print(np.dot(U, V) ** 2)
+    # Choise between random and NMF
+    choice = "random"
+    # Rang
+    r = 2
+    # Création d'un M synthétique.
+    m = 10
+    n = 10
+    U = np.random.rand(m, r)
+    V = np.random.rand(r, n)
+    M = np.dot(U, V) ** 2
+    # Nombre de tests à réaliser
+    nb_tests = 100
+    nb_good = 0
+    for i in range(nb_tests):
+        # Génération des matrices U et V
+        U, V = init_matrix(M, r, choice)
+        U, V = coordinate_descent(max_iterations, M, U, V)
+        print(np.linalg.norm(M - np.dot(U, V) ** 2))
+        if np.linalg.norm(M - np.dot(U, V) ** 2) < 10 ** -1:
+            nb_good += 1
+    print(f"{(nb_good / nb_tests) * 100}%")
 
 
 if __name__ == "__main__":
-    main()
+    squared_factorisation()
