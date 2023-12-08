@@ -1,25 +1,58 @@
 import math
 import numpy as np
 from sklearn.decomposition import NMF
-import time
 
 
 def roots_third_degree(a, b, c, d):
-    """ Prends 30 à 45% du temps d'éxecution, à optimiser"""
-    # Définition des coefficients
-    coefficients = [a, b, c, d]
-    # Trouver les racines du polynomes
-    roots = np.real(np.roots(coefficients)[np.isreal(np.roots(coefficients))])
-    return roots
+    p = -(b ** 2 / (3 * a ** 2)) + c / a
+    q = ((2 * b ** 3) / (27 * a ** 3)) - ((9 * c * b) / (27 * a ** 2)) + (d / a)
+    delta = -(4 * p ** 3 + 27 * q ** 2)
+    # DELTA < 0
+    if delta < 0:
+        u = (-q + math.sqrt(-delta / 27)) / 2
+        v = (-q - math.sqrt(-delta / 27)) / 2
+        if u < 0:
+            u = -(-u) ** (1 / 3)
+        elif u > 0:
+            u = u ** (1 / 3)
+        else:
+            u = 0
+        if v < 0:
+            v = -(-v) ** (1 / 3)
+        elif v > 0:
+            v = v ** (1 / 3)
+        else:
+            v = 0
+        root1 = u + v - (b / (3 * a))
+        return [root1]
+    # DELTA = 0
+    elif delta == 0:
+        if p == q == 0:
+            root1 = 0
+            return [root1]
+        else:
+            root1 = (3 * q) / p
+            root2 = (-3 * q) / (2 * p)
+            return [root1, root2]
+    # DELTA > 0
+    else:
+        phi = math.acos(-q / 2 * math.sqrt(-27 / (p ** 3)))
+        z1 = 2 * math.sqrt(-p / 3) * math.cos(phi / 3)
+        z2 = 2 * math.sqrt(-p / 3) * math.cos((phi + 2 * math.pi) / 3)
+        z3 = 2 * math.sqrt(-p / 3) * math.cos((phi + 4 * math.pi) / 3)
+        root1 = z1 - (b / (3 * a))
+        root2 = z2 - (b / (3 * a))
+        root3 = z3 - (b / (3 * a))
+        return [root1, root2, root3]
 
 
 def init_matrix(M, r, choice):
     # On entre M et on genere U et V de maniere random, plus tard il faudra voir si l'initialisation n'est pas plus
-    # efficace en démarrant d'un autre point de départ, NMF ou autre
+    # efficace en démarrant d'un autre point de départ, SVD ou autre
     if choice == "random":
         U = np.random.rand(M.shape[0], r)
         V = np.random.rand(r, M.shape[1])
-    # tester svd plutot que NMF car pas forcement positif
+    # Tester svd plutot que NMF car pas forcément positif
     elif choice == "NMF":
         nmf = NMF(n_components=r)
         U = nmf.fit_transform(M)
@@ -32,13 +65,11 @@ def calculate_function(a, b, c, d, x):
 
 
 def quartic_function(M, U, V, x_index, random_colonne, r):
-    start_time = time.time()
     m, n = M.shape
     b = 0
     a = 0
     c = 0
     d = 0
-    # Calcul du "reste"
     # Calcul des coefficients pour une variable de V fixé
     for i in range(m):
         a += np.power(U[i][x_index], 4)
@@ -52,7 +83,6 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
         b_inter = b_inter * b_inter_2
         b += b_inter
     b *= 4
-    # corriger erreur pour c et d
     for i in range(m):
         c_inter = 0
         reste = 0
@@ -79,8 +109,6 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
         d_inter_1 = d_inter_1 - d_inter_2
         d += d_inter_1
     d *= 4
-    end_time = time.time()
-    #print(end_time-start_time)
     return a, b, c, d
 
 
@@ -119,13 +147,13 @@ def squared_factorisation():
     # Rang
     r = 2
     # Création d'un M synthétique.
-    m = 10
-    n = 10
+    m = 3
+    n = 3
     U = np.random.rand(m, r)
     V = np.random.rand(r, n)
     M = np.dot(U, V) ** 2
     # Nombre de tests à réaliser
-    nb_tests = 100
+    nb_tests = 50
     nb_good = 0
     for i in range(nb_tests):
         # Génération des matrices U et V
