@@ -70,27 +70,25 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
     a = 0
     c = 0
     d = 0
+    # Calcul du reste
+    reste = [0] * m
+    for i in range(m):
+        for index in range(r):
+            if index != x_index:
+                reste[i] += U[i][index] * V[index][random_colonne]
     # Calcul des coefficients pour une variable de V fixé
     for i in range(m):
         a += np.power(U[i][x_index], 4)
     for i in range(m):
         b_inter = 0
-        b_inter_2 = 0
         b_inter += np.power(U[i][x_index], 3)
-        for index in range(r):
-            if index != x_index:
-                b_inter_2 += U[i][index] * V[index][random_colonne]
-        b_inter = b_inter * b_inter_2
+        b_inter = b_inter * reste[i]
         b += b_inter
     b *= 4
     for i in range(m):
         c_inter = 0
-        reste = 0
         c_inter += 3 * np.power(U[i][x_index], 2)
-        for index in range(r):
-            if index != x_index:
-                reste += U[i][index] * V[index][random_colonne]
-        c_inter_2 = reste ** 2
+        c_inter_2 = reste[i] ** 2
         c_inter = c_inter * c_inter_2
         c_inter -= np.power(U[i][x_index], 2) * M[i][random_colonne]
         c += c_inter
@@ -98,14 +96,10 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
     for i in range(m):
         d_inter_1 = 0
         d_inter_2 = 0
-        reste = 0
         d_inter_1 += U[i][x_index]
         d_inter_2 += M[i][random_colonne] * U[i][x_index]
-        for index in range(r):
-            if index != x_index:
-                reste += U[i][index] * V[index][random_colonne]
-        d_inter_1 *= reste ** 3
-        d_inter_2 *= reste
+        d_inter_1 *= reste[i] ** 3
+        d_inter_2 *= reste[i]
         d_inter_1 = d_inter_1 - d_inter_2
         d += d_inter_1
     d *= 4
@@ -113,7 +107,6 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
 
 
 def optimise_v(M, U, V):
-    # repasser dans funct plusieurs fois
     m, n = V.shape
     for i in range(n):
         for j in range(m):
@@ -134,8 +127,13 @@ def optimise_v(M, U, V):
 
 def coordinate_descent(max_iterations, M, U, V):
     for iteration in range(max_iterations):
+        erreur_prec = np.linalg.norm(M - np.dot(U, V) ** 2)
         V = optimise_v(M, U, V)
         U = optimise_v(M.T, V.T, U.T).T
+        erreur = np.linalg.norm(M - np.dot(U, V) ** 2)
+        # stop the algorithm if no more changes
+        if erreur_prec - erreur < 10 ** -5:
+            break
     return U, V
 
 
@@ -147,8 +145,8 @@ def squared_factorisation():
     # Rang
     r = 2
     # Création d'un M synthétique.
-    m = 3
-    n = 3
+    m = 15
+    n = 15
     U = np.random.rand(m, r)
     V = np.random.rand(r, n)
     M = np.dot(U, V) ** 2
