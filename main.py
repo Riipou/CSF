@@ -1,20 +1,62 @@
 import math
 import numpy as np
+from sklearn.decomposition import NMF
 
 
 def roots_third_degree(a, b, c, d):
-    # Définition des coefficients
-    coefficients = [a, b, c, d]
-    # Trouver les racines du polynomes
-    roots = np.real(np.roots(coefficients)[np.isreal(np.roots(coefficients))])
-    return roots
+    p = -(b ** 2 / (3 * a ** 2)) + c / a
+    q = ((2 * b ** 3) / (27 * a ** 3)) - ((9 * c * b) / (27 * a ** 2)) + (d / a)
+    delta = -(4 * p ** 3 + 27 * q ** 2)
+    # DELTA < 0
+    if delta < 0:
+        u = (-q + math.sqrt(-delta / 27)) / 2
+        v = (-q - math.sqrt(-delta / 27)) / 2
+        if u < 0:
+            u = -(-u) ** (1 / 3)
+        elif u > 0:
+            u = u ** (1 / 3)
+        else:
+            u = 0
+        if v < 0:
+            v = -(-v) ** (1 / 3)
+        elif v > 0:
+            v = v ** (1 / 3)
+        else:
+            v = 0
+        root1 = u + v - (b / (3 * a))
+        return [root1]
+    # DELTA = 0
+    elif delta == 0:
+        if p == q == 0:
+            root1 = 0
+            return [root1]
+        else:
+            root1 = (3 * q) / p
+            root2 = (-3 * q) / (2 * p)
+            return [root1, root2]
+    # DELTA > 0
+    else:
+        phi = math.acos(-q / 2 * math.sqrt(-27 / (p ** 3)))
+        z1 = 2 * math.sqrt(-p / 3) * math.cos(phi / 3)
+        z2 = 2 * math.sqrt(-p / 3) * math.cos((phi + 2 * math.pi) / 3)
+        z3 = 2 * math.sqrt(-p / 3) * math.cos((phi + 4 * math.pi) / 3)
+        root1 = z1 - (b / (3 * a))
+        root2 = z2 - (b / (3 * a))
+        root3 = z3 - (b / (3 * a))
+        return [root1, root2, root3]
 
 
-def init_matrix(M, r):
+def init_matrix(M, r, choice):
     # On entre M et on genere U et V de maniere random, plus tard il faudra voir si l'initialisation n'est pas plus
-    # efficace en démarrant d'un autre point de départ, NMF ou autre
-    U = np.random.rand(M.shape[0], r)
-    V = np.random.rand(r, M.shape[1])
+    # efficace en démarrant d'un autre point de départ, SVD ou autre
+    if choice == "random":
+        U = np.random.rand(M.shape[0], r)
+        V = np.random.rand(r, M.shape[1])
+    # Tester svd plutot que NMF car pas forcément positif
+    elif choice == "NMF":
+        nmf = NMF(n_components=r)
+        U = nmf.fit_transform(M)
+        V = nmf.components_
     return U, V
 
 
@@ -28,28 +70,25 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
     a = 0
     c = 0
     d = 0
+    # Calcul du reste
+    reste = [0] * m
+    for i in range(m):
+        for index in range(r):
+            if index != x_index:
+                reste[i] += U[i][index] * V[index][random_colonne]
     # Calcul des coefficients pour une variable de V fixé
     for i in range(m):
         a += np.power(U[i][x_index], 4)
     for i in range(m):
         b_inter = 0
-        b_inter_2 = 0
         b_inter += np.power(U[i][x_index], 3)
-        for index in range(r):
-            if index != x_index:
-                b_inter_2 += U[i][index] * V[index][random_colonne]
-        b_inter = b_inter * b_inter_2
+        b_inter = b_inter * reste[i]
         b += b_inter
     b *= 4
-    # corriger erreur pour c et d
     for i in range(m):
         c_inter = 0
-        reste = 0
         c_inter += 3 * np.power(U[i][x_index], 2)
-        for index in range(r):
-            if index != x_index:
-                reste += U[i][index] * V[index][random_colonne]
-        c_inter_2 = reste ** 2
+        c_inter_2 = reste[i] ** 2
         c_inter = c_inter * c_inter_2
         c_inter -= np.power(U[i][x_index], 2) * M[i][random_colonne]
         c += c_inter
@@ -57,14 +96,10 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
     for i in range(m):
         d_inter_1 = 0
         d_inter_2 = 0
-        reste = 0
         d_inter_1 += U[i][x_index]
         d_inter_2 += M[i][random_colonne] * U[i][x_index]
-        for index in range(r):
-            if index != x_index:
-                reste += U[i][index] * V[index][random_colonne]
-        d_inter_1 *= reste ** 3
-        d_inter_2 *= reste
+        d_inter_1 *= reste[i] ** 3
+        d_inter_2 *= reste[i]
         d_inter_1 = d_inter_1 - d_inter_2
         d += d_inter_1
     d *= 4
@@ -92,45 +127,41 @@ def optimise_v(M, U, V):
 
 def coordinate_descent(max_iterations, M, U, V):
     for iteration in range(max_iterations):
+        erreur_prec = np.linalg.norm(M - np.dot(U, V) ** 2)
         V = optimise_v(M, U, V)
         U = optimise_v(M.T, V.T, U.T).T
+        erreur = np.linalg.norm(M - np.dot(U, V) ** 2)
+        # stop the algorithm if no more changes
+        if erreur_prec - erreur < 10 ** -5:
+            break
     return U, V
 
 
-def main():
-    """U = np.array([[1, 2],
-                  [3, 4],
-                  [5, 6]])
-    V = np.array([[1, 2, 3],
-                  [4, 5, 6]])"""
-    # Rang
-    r = 2
+def squared_factorisation():
     # Nombre d'itérations maximum
     max_iterations = 10000
-    # Matrice M
-    M = np.array([[81, 144, 225],
-                  [361, 676, 1089],
-                  [841, 1600, 2601]])
-    # Génération des matrices U et V
-    U, V = init_matrix(M, r)
-    print("Matrice M :")
-    for row in M:
-        print(row)
-    print("Matrice U initiale :")
-    for row in U:
-        print(row)
-    print("Matrice V initiale :")
-    for row in V:
-        print(row)
-    U, V = coordinate_descent(max_iterations, M, U, V)
-    print("Matrice U finale :")
-    for row in U:
-        print(row)
-    print("Matrice V finale :")
-    for row in V:
-        print(row)
-    print(np.dot(U, V) ** 2)
+    # Choise between random and NMF
+    choice = "random"
+    # Rang
+    r = 2
+    # Création d'un M synthétique.
+    m = 15
+    n = 15
+    U = np.random.rand(m, r)
+    V = np.random.rand(r, n)
+    M = np.dot(U, V) ** 2
+    # Nombre de tests à réaliser
+    nb_tests = 50
+    nb_good = 0
+    for i in range(nb_tests):
+        # Génération des matrices U et V
+        U, V = init_matrix(M, r, choice)
+        U, V = coordinate_descent(max_iterations, M, U, V)
+        print(np.linalg.norm(M - np.dot(U, V) ** 2))
+        if np.linalg.norm(M - np.dot(U, V) ** 2) < 10 ** -1:
+            nb_good += 1
+    print(f"{(nb_good / nb_tests) * 100}%")
 
 
 if __name__ == "__main__":
-    main()
+    squared_factorisation()
