@@ -1,6 +1,5 @@
 import math
 import numpy as np
-from sklearn.decomposition import NMF
 
 
 def roots_third_degree(a, b, c, d):
@@ -47,16 +46,16 @@ def roots_third_degree(a, b, c, d):
 
 
 def init_matrix(M, r, choice):
-    # On entre M et on genere U et V de maniere random, plus tard il faudra voir si l'initialisation n'est pas plus
-    # efficace en démarrant d'un autre point de départ, SVD ou autre
+    # Random U and V
     if choice == "random":
         U = np.random.rand(M.shape[0], r)
         V = np.random.rand(r, M.shape[1])
-    # Tester svd plutot que NMF car pas forcément positif
-    elif choice == "NMF":
-        nmf = NMF(n_components=r)
-        U = nmf.fit_transform(M)
-        V = nmf.components_
+    # Calculation of U and V with SVD
+    elif choice == "SVD":
+        U, S, V = np.linalg.svd(M)
+        U = U[:, :r]
+        V = V[:r, :]
+        U = np.dot(U, np.diag(S[:r]))
     return U, V
 
 
@@ -70,13 +69,13 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
     a = 0
     c = 0
     d = 0
-    # Calcul du reste
+    # Calculation of R
     reste = [0] * m
     for i in range(m):
         for index in range(r):
             if index != x_index:
                 reste[i] += U[i][index] * V[index][random_colonne]
-    # Calcul des coefficients pour une variable de V fixé
+    # Calculation of coefficients for a fixed V variable
     for i in range(m):
         a += np.power(U[i][x_index], 4)
     for i in range(m):
@@ -110,7 +109,7 @@ def optimise_v(M, U, V):
     m, n = V.shape
     for i in range(n):
         for j in range(m):
-            # On optimise l'élément [j,i]
+            # We optimise the element [j,i]
             a, b, c, d = quartic_function(M, U, V, j, i, m)
             roots = roots_third_degree(4 * a, 3 * b, 2 * c, d)
             y = math.inf
@@ -126,42 +125,63 @@ def optimise_v(M, U, V):
 
 
 def coordinate_descent(max_iterations, M, U, V):
+    alpha = 0.99
     for iteration in range(max_iterations):
         erreur_prec = np.linalg.norm(M - np.dot(U, V) ** 2)
         V = optimise_v(M, U, V)
         U = optimise_v(M.T, V.T, U.T).T
         erreur = np.linalg.norm(M - np.dot(U, V) ** 2)
         # stop the algorithm if no more changes
-        if erreur_prec - erreur < 10 ** -5:
+        if erreur > alpha * erreur_prec:
             break
     return U, V
 
 
-def squared_factorisation():
-    # Nombre d'itérations maximum
+def squared_factorisation(m, n, r, choice):
+    # Number of iterations
     max_iterations = 10000
-    # Choise between random and NMF
-    choice = "random"
-    # Rang
-    r = 2
-    # Création d'un M synthétique.
-    m = 15
-    n = 15
+    # Creation of synthetic M
     U = np.random.rand(m, r)
     V = np.random.rand(r, n)
     M = np.dot(U, V) ** 2
-    # Nombre de tests à réaliser
-    nb_tests = 50
+    # Number of tests to do
+    nb_tests = 100
     nb_good = 0
     for i in range(nb_tests):
-        # Génération des matrices U et V
+        # Generation of matrix U and V
         U, V = init_matrix(M, r, choice)
         U, V = coordinate_descent(max_iterations, M, U, V)
-        print(np.linalg.norm(M - np.dot(U, V) ** 2))
-        if np.linalg.norm(M - np.dot(U, V) ** 2) < 10 ** -1:
+        if (np.linalg.norm(M - np.dot(U, V) ** 2) / np.linalg.norm(M)) < 1e-3:
             nb_good += 1
-    print(f"{(nb_good / nb_tests) * 100}%")
+    return nb_good / nb_tests
+
+
+def multiple_test():
+    # Choose between random and SVD
+    choice1 = "random"
+    choice2 = "SVD"
+    # Rank
+    r = 2
+    # Sizes of the matrix m = n
+    values = [5, 10, 50, 100, 200]
+    with open("result.txt", "w") as file:
+        file.write("RANDOM METHOD :\n")
+        for i in values:
+            print(i)
+            m = n = i
+            accuracy = squared_factorisation(m, n, r, choice1)
+            file.write(f"m=n={n} accuracy={accuracy * 100}%\n")
+            if accuracy == 0:
+                break
+        file.write("SVD METHOD :\n")
+        for i in values:
+            print(i)
+            m = n = i
+            accuracy = squared_factorisation(m, n, r, choice2)
+            file.write(f"m=n={n} accuracy={accuracy * 100}%\n")
+            if accuracy == 0:
+                break
 
 
 if __name__ == "__main__":
-    squared_factorisation()
+    multiple_test()
