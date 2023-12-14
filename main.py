@@ -163,7 +163,8 @@ def multiple_test():
     # Rank
     r = 2
     # Sizes of the matrix m = n
-    values = [5, 10, 50, 100, 200]
+    values = [5, 10, 50, 100]
+    # Too long for more than 100
     with open("result.txt", "w") as file:
         file.write("RANDOM METHOD :\n")
         for i in values:
