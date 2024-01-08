@@ -3,7 +3,7 @@ include("slackgon.jl")
 function multiple_slackgon_matrix()
     nb_tests = 10^6
     max_n = 10
-    open("slackgon_matrix_multiple_test.txt", "w") do file
+    open("results/slackgon_matrix_multiple_test.txt", "w") do file
         for i in max_n:-1:3
             write(file, "Matrix : $i x $i\n")
             M, r = slackngon(i)
