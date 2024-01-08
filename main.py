@@ -140,14 +140,14 @@ def coordinate_descent(max_iterations, M, U, V):
 def squared_factorisation(m, n, r, choice):
     # Number of iterations
     max_iterations = 10000
-    # Creation of synthetic M
-    U = np.random.rand(m, r)
-    V = np.random.rand(r, n)
-    M = np.dot(U, V) ** 2
     # Number of tests to do
     nb_tests = 100
     nb_good = 0
     for i in range(nb_tests):
+        # Creation of synthetic M
+        U = np.random.rand(m, r)
+        V = np.random.rand(r, n)
+        M = np.dot(U, V) ** 2
         # Generation of matrix U and V
         U, V = init_matrix(M, r, choice)
         U, V = coordinate_descent(max_iterations, M, U, V)
@@ -165,7 +165,7 @@ def multiple_test():
     # Sizes of the matrix m = n
     values = [5, 10, 50, 100]
     # Too long for more than 100
-    with open("result.txt", "w") as file:
+    with open("accuracy.txt", "w") as file:
         file.write("RANDOM METHOD :\n")
         for i in values:
             print(i)

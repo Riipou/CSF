@@ -1,4 +1,0 @@
-RANDOM METHOD :
-m=n=5 accuracy=45.0%
-m=n=10 accuracy=52.0%
-m=n=50 accuracy=62.0%
