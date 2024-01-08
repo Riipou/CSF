@@ -141,7 +141,7 @@ def squared_factorisation(m, n, r, choice):
     # Number of iterations
     max_iterations = 10000
     # Number of tests to do
-    nb_tests = 100
+    nb_tests = 1
     nb_good = 0
     for i in range(nb_tests):
         # Creation of synthetic M
@@ -164,7 +164,7 @@ def multiple_test():
     r = 2
     # Sizes of the matrix m = n
     values = [5, 10, 50, 100]
-    with open("../results/accuracy_multiple_tests_python.txt", "w") as file:
+    with open("results/accuracy_multiple_tests_python.txt", "w") as file:
         file.write("RANDOM METHOD :\n")
         for i in values:
             print(i)
