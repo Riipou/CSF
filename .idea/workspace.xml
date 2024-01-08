@@ -6,8 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="c196e5cc-d298-4585-88c9-0d6a4b972f20" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Julia/multiple_slackgon.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/multiple_slackgon.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Python/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/function_CD.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/function_CD.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiple_slackgon.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/multiple_slackgon.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multiple_test.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/multiple_test.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/slackgon.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/slackgon.jl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,7 +203,7 @@
       <workItem from="1704643355504" duration="8089000" />
       <workItem from="1704660046977" duration="41000" />
       <workItem from="1704710385570" duration="6816000" />
-      <workItem from="1704742417477" duration="1176000" />
+      <workItem from="1704742417477" duration="842000" />
     </task>
     <servers />
   </component>
