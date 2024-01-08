@@ -13,9 +13,7 @@ function multiple_slackgon_matrix()
                 for j in 1:nb_tests
                     U, V = init_matrix(M, r, "random")
                     U, V = coordinate_descent(10000, M, U, V)
-                    #println(norm(M - (U * V).^2) / norm(M))
                     error = norm(M - (U * V).^2) / norm(M)
-                    #println(error)
                     if error < 1e-3
                         nb_good += 1
                     end

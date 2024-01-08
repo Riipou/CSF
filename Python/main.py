@@ -164,7 +164,6 @@ def multiple_test():
     r = 2
     # Sizes of the matrix m = n
     values = [5, 10, 50, 100]
-    # Too long for more than 100
     with open("../results/accuracy_multiple_tests_python.txt", "w") as file:
         file.write("RANDOM METHOD :\n")
         for i in values:
