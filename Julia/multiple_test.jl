@@ -22,7 +22,7 @@ function multiple_test()
     choice2 = "SVD"
     r = 2
     values = [5, 10, 50, 100]
-    open("results/accuracy_multiple_tests_julia", "w") do file
+    open("../results/accuracy_multiple_tests_julia", "w") do file
         write(file, "RANDOM METHOD :\n")
         for i in values
             println(i)
