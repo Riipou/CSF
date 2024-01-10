@@ -6,9 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="c196e5cc-d298-4585-88c9-0d6a4b972f20" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Julia/function_CD.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/function_CD.jl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Julia/multiple_slackgon.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/multiple_slackgon.jl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Julia/multiple_test.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/multiple_test.jl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Python/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/accuracy_multiple_tests_julia.txt" beforeDir="false" afterPath="$PROJECT_DIR$/results/accuracy_multiple_tests_julia.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/results/accuracy_multiple_tests_python.txt" beforeDir="false" afterPath="$PROJECT_DIR$/results/accuracy_multiple_tests_python.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,6 +205,7 @@
       <workItem from="1704660046977" duration="41000" />
       <workItem from="1704710385570" duration="6816000" />
       <workItem from="1704742417477" duration="842000" />
+      <workItem from="1704822506670" duration="6378000" />
     </task>
     <servers />
   </component>
@@ -214,7 +218,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Hadamard_Project$main.coverage" NAME="main Coverage Results" MODIFIED="1701341612285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Hadamard_Project$multiple_test.coverage" NAME="multiple_test Coverage Results" MODIFIED="1701967733346" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/HadamardProject$main.coverage" NAME="main Coverage Results" MODIFIED="1704744558091" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/HadamardProject$main.coverage" NAME="main Coverage Results" MODIFIED="1704845033347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Hadamard_Project$functions.coverage" NAME="main Coverage Results" MODIFIED="1701969904935" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Hadamard_Project$base_test.coverage" NAME="base_test Coverage Results" MODIFIED="1701967864588" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>

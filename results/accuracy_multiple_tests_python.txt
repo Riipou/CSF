@@ -1,10 +1,6 @@
-RANDOM METHOD :
-m=n=5 accuracy=31.0%
-m=n=10 accuracy=47.0%
-m=n=50 accuracy=75.0%
-m=n=100 accuracy=79.0%
-SVD METHOD :
-m=n=5 accuracy=92.0%
-m=n=10 accuracy=98.0%
-m=n=50 accuracy=100.0%
-m=n=100 accuracy=100.0%
+Matrix nxn : 5
+for random method accuracy=38.0%
+for svd accuracy=94.0%
+Matrix nxn : 10
+for random method accuracy=56.00000000000001%
+for svd accuracy=98.0%

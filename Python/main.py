@@ -79,28 +79,13 @@ def quartic_function(M, U, V, x_index, random_colonne, r):
     for i in range(m):
         a += np.power(U[i][x_index], 4)
     for i in range(m):
-        b_inter = 0
-        b_inter += np.power(U[i][x_index], 3)
-        b_inter = b_inter * reste[i]
-        b += b_inter
+        b += np.power(U[i][x_index], 3) * reste[i]
     b *= 4
     for i in range(m):
-        c_inter = 0
-        c_inter += 3 * np.power(U[i][x_index], 2)
-        c_inter_2 = reste[i] ** 2
-        c_inter = c_inter * c_inter_2
-        c_inter -= np.power(U[i][x_index], 2) * M[i][random_colonne]
-        c += c_inter
+        c += 3 * np.power(U[i][x_index], 2) * reste[i] ** 2 - np.power(U[i][x_index], 2) * M[i][random_colonne]
     c *= 2
     for i in range(m):
-        d_inter_1 = 0
-        d_inter_2 = 0
-        d_inter_1 += U[i][x_index]
-        d_inter_2 += M[i][random_colonne] * U[i][x_index]
-        d_inter_1 *= reste[i] ** 3
-        d_inter_2 *= reste[i]
-        d_inter_1 = d_inter_1 - d_inter_2
-        d += d_inter_1
+        d += U[i][x_index] * reste[i] ** 3 - M[i][random_colonne] * U[i][x_index] * reste[i]
     d *= 4
     return a, b, c, d
 
@@ -119,8 +104,7 @@ def optimise_v(M, U, V):
                 if y_test < y:
                     y = y_test
                     new_x = root
-            if y < calculate_function(a, b, c, d, V[j, i]):
-                V[j, i] = new_x
+            V[j, i] = new_x
     return V
 
 
@@ -137,50 +121,43 @@ def coordinate_descent(max_iterations, M, U, V):
     return U, V
 
 
-def squared_factorisation(m, n, r, choice):
+def squared_factorisation(m, n, r, nb_tests):
     # Number of iterations
     max_iterations = 10000
-    # Number of tests to do
-    nb_tests = 1
-    nb_good = 0
+    nb_good_rand = 0
+    nb_good_svd = 0
     for i in range(nb_tests):
         # Creation of synthetic M
         U = np.random.rand(m, r)
         V = np.random.rand(r, n)
         M = np.dot(U, V) ** 2
         # Generation of matrix U and V
-        U, V = init_matrix(M, r, choice)
-        U, V = coordinate_descent(max_iterations, M, U, V)
-        if (np.linalg.norm(M - np.dot(U, V) ** 2) / np.linalg.norm(M)) < 1e-3:
-            nb_good += 1
-    return nb_good / nb_tests
+        U_rand, V_rand = init_matrix(M, r, "random")
+        U_svd, V_svd = init_matrix(M, r, "SVD")
+        U_rand, V_rand = coordinate_descent(max_iterations, M, U_rand, V_rand)
+        U_svd, V_svd = coordinate_descent(max_iterations, M, U_svd, V_svd)
+        if (np.linalg.norm(M - np.dot(U_rand, V_rand) ** 2) / np.linalg.norm(M)) < 1e-3:
+            nb_good_rand += 1
+        if (np.linalg.norm(M - np.dot(U_svd, V_svd) ** 2) / np.linalg.norm(M)) < 1e-3:
+            nb_good_svd += 1
+    return [nb_good_rand / nb_tests, nb_good_svd / nb_tests]
 
 
 def multiple_test():
-    # Choose between random and SVD
-    choice1 = "random"
-    choice2 = "SVD"
     # Rank
     r = 2
     # Sizes of the matrix m = n
-    values = [5, 10, 50, 100]
+    values = [5, 10]
+    # nb of tests to do
+    nb_tests = 100
     with open("results/accuracy_multiple_tests_python.txt", "w") as file:
-        file.write("RANDOM METHOD :\n")
         for i in values:
-            print(i)
+            print("Matrices nxn : ", i)
             m = n = i
-            accuracy = squared_factorisation(m, n, r, choice1)
-            file.write(f"m=n={n} accuracy={accuracy * 100}%\n")
-            if accuracy == 0:
-                break
-        file.write("SVD METHOD :\n")
-        for i in values:
-            print(i)
-            m = n = i
-            accuracy = squared_factorisation(m, n, r, choice2)
-            file.write(f"m=n={n} accuracy={accuracy * 100}%\n")
-            if accuracy == 0:
-                break
+            accuracy = squared_factorisation(m, n, r, nb_tests)
+            file.write(f"Matrix nxn : {n}\n")
+            file.write(f"for random method accuracy={accuracy[0] * 100}%\n")
+            file.write(f"for svd accuracy={accuracy[1] * 100}%\n")
 
 
 if __name__ == "__main__":

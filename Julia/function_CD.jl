@@ -83,32 +83,17 @@ function quartic_function(M, U, V, x_index, random_colonne, r)
     end
     
     for i in 1:m
-        b_inter = 0
-        b_inter += U[i, x_index]^3
-        b_inter = b_inter * reste[i]
-        b += b_inter
+        b += U[i, x_index]^3 * reste[i]
     end
     b *= 4
     
     for i in 1:m
-        c_inter = 0
-        c_inter += 3 * U[i, x_index]^2
-        c_inter_2 = reste[i]^2
-        c_inter = c_inter * c_inter_2
-        c_inter -= U[i, x_index]^2 * M[i, random_colonne]
-        c += c_inter
+        c += 3 * U[i, x_index]^2 * reste[i]^2 - U[i, x_index]^2 * M[i, random_colonne]
     end
     c *= 2
     
-    for i in 1:m
-        d_inter_1 = 0
-        d_inter_2 = 0
-        d_inter_1 += U[i, x_index]
-        d_inter_2 += M[i, random_colonne] * U[i, x_index]
-        d_inter_1 *= reste[i]^3
-        d_inter_2 *= reste[i]
-        d_inter_1 = d_inter_1 - d_inter_2
-        d += d_inter_1
+    for i in 1:m 
+        d += U[i, x_index] * reste[i]^3 - M[i, random_colonne] * U[i, x_index] * reste[i]
     end
     d *= 4
     return a, b, c, d
@@ -129,9 +114,7 @@ function optimise_v(M, U, V)
                     new_x = root
                 end
             end
-            if y < calculate_function(a, b, c, d, V[j, i])
-                V[j, i] = new_x
-            end
+            V[j, i] = new_x
         end
     end
     return V
