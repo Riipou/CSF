@@ -121,7 +121,7 @@ function optimise_v(M, U, V)
 end
 
 function coordinate_descent(max_iterations, M, U, V)
-    alpha = 0.99
+    alpha = 0.999999
     for iteration in 1:max_iterations
         erreur_prec = norm(M - (U * V).^2)
         V = optimise_v(M, U, V)

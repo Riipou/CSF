@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c196e5cc-d298-4585-88c9-0d6a4b972f20" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Julia/function_CD.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/function_CD.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Julia/multiple_slackgon.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/multiple_slackgon.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Julia/multiple_test.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/multiple_test.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Python/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_multiple_tests_julia.txt" beforeDir="false" afterPath="$PROJECT_DIR$/results/accuracy_multiple_tests_julia.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_multiple_tests_python.txt" beforeDir="false" afterPath="$PROJECT_DIR$/results/accuracy_multiple_tests_python.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -206,6 +200,8 @@
       <workItem from="1704710385570" duration="6816000" />
       <workItem from="1704742417477" duration="842000" />
       <workItem from="1704822506670" duration="6378000" />
+      <workItem from="1704906379322" duration="46000" />
+      <workItem from="1705489298731" duration="807000" />
     </task>
     <servers />
   </component>
