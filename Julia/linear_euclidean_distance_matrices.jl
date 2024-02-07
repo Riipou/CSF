@@ -13,6 +13,7 @@ end
 function multiple_distance_matrix()
     nb_tests = 10^4
     max_n = 10
+    alpha = 0.999999
     open("results/distance_matrix_multiple_test.txt", "w") do file
         for i in max_n:-1:3
             println("Matrix of size : ",i)
@@ -24,7 +25,7 @@ function multiple_distance_matrix()
                 best_error = Inf
                 for j in 1:nb_tests
                     U, V = init_matrix(M, r, "random")
-                    U, V = coordinate_descent(10000, M, U, V)
+                    U, V = coordinate_descent(10000, M, U, V, alpha)
                     error = norm(M - (U * V).^2) / norm(M)
                     if error < 1e-3
                         nb_good += 1

@@ -100,10 +100,13 @@ function quartic_function(M, U, V, x_index, random_colonne, r)
 end
 
 function optimise_v(M, U, V)
-    m, n = size(V)
+    r, n = size(V)
     for i in 1:n
-        for j in 1:m
-            a, b, c, d = quartic_function(M, U, V, j, i, m)
+        #CSLeastSquare
+        v = U*V(:,i)
+        for j in 1:r
+
+            a, b, c, d = quartic_function(M, U, V, j, i, r)
             roots = roots_third_degree(4 * a, 3 * b, 2 * c, d)
             y = Inf
             new_x = V[j, i]
@@ -115,13 +118,13 @@ function optimise_v(M, U, V)
                 end
             end
             V[j, i] = new_x
+
         end
     end
     return V
 end
 
-function coordinate_descent(max_iterations, M, U, V)
-    alpha = 0.999999
+function coordinate_descent(max_iterations, M, U, V, alpha)
     for iteration in 1:max_iterations
         erreur_prec = norm(M - (U * V).^2)
         V = optimise_v(M, U, V)

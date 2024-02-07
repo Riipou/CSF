@@ -4,14 +4,15 @@ function squared_factorisation(m, n, r,nb_tests)
     max_iterations = 10000
     nb_good_rand = 0
     nb_good_svd = 0
+    alpha = 0.999999
     for i in 1:nb_tests
         U = rand(m, r)
         V = rand(r, n)
         M = (U * V).^2
         U_rand, V_rand = init_matrix(M, r, "random")
         U_svd, V_svd = init_matrix(M, r, "SVD")
-        U_rand, V_rand = coordinate_descent(max_iterations, M, U_rand, V_rand)
-        U_svd, V_svd = coordinate_descent(max_iterations, M, U_svd, V_svd)
+        U_rand, V_rand = coordinate_descent(max_iterations, M, U_rand, V_rand, alpha)
+        U_svd, V_svd = coordinate_descent(max_iterations, M, U_svd, V_svd, alpha)
         if norm(M - (U_rand * V_rand).^2) / norm(M) < 1e-3
             nb_good_rand += 1
         end
@@ -32,13 +33,14 @@ function random_test()
             m = n = i
             nb_tests = 10
             max_iterations = 10000
+            alpha = 0.999999
             nb_good = 0
             U = rand(m, r)
             V = rand(r, n)
             M = (U * V).^2
             for i in 1:nb_tests
                 U, V = init_matrix(M, r, "random")
-                U, V= coordinate_descent(max_iterations, M, U, V)
+                U, V= coordinate_descent(max_iterations, M, U, V, alpha)
                 if norm(M - (U * V).^2) / norm(M) < 1e-3
                     nb_good += 1
                 end
