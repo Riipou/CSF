@@ -62,75 +62,52 @@ function calculate_function(a, b, c, d, x)
     return a * x^4 + b * x^3 + c * x^2 + d * x
 end
 
-function quartic_function(M, U, V, x_index, random_colonne, r)
-    m, n = size(M)
-    b = 0
-    a = 0
-    c = 0
-    d = 0
-    
-    reste = zeros(m)
-    for i in 1:m
-        for index in 1:r
-            if index != x_index
-                reste[i] += U[i, index] * V[index, random_colonne]
+function cs_least_square(M, U, V, r, j)
+    R = U*V[:,j]
+    for p in 1:r
+        R -= U[:,p]*V[p,j]
+        m, _ = size(M)
+        a, b, c, d = 0, 0, 0, 0
+        for i in 1:m
+            a += U[i, p]^4
+            b += U[i, p]^3 * R[i]
+            c += 3 * U[i, p]^2 * R[i]^2 - U[i, p]^2 * M[i, j]
+            d += U[i, p] * R[i]^3 - M[i, j] * U[i, p] * R[i]
+        end
+        b *= 4
+        c *= 2
+        d *= 4
+        roots = roots_third_degree(4 * a, 3 * b, 2 * c, d)
+        y = Inf
+        new_x = V[p, j]
+        for root in roots
+            y_test = calculate_function(a, b, c, d, root)
+            if y_test < y
+                y = y_test
+                new_x = root
             end
         end
+        V[p, j] = new_x
+        R += U[:,p]*V[p,j]
     end
-    
-    for i in 1:m
-        a += U[i, x_index]^4
-    end
-    
-    for i in 1:m
-        b += U[i, x_index]^3 * reste[i]
-    end
-    b *= 4
-    
-    for i in 1:m
-        c += 3 * U[i, x_index]^2 * reste[i]^2 - U[i, x_index]^2 * M[i, random_colonne]
-    end
-    c *= 2
-    
-    for i in 1:m 
-        d += U[i, x_index] * reste[i]^3 - M[i, random_colonne] * U[i, x_index] * reste[i]
-    end
-    d *= 4
-    return a, b, c, d
+    return V
 end
 
 function optimise_v(M, U, V)
     r, n = size(V)
-    for i in 1:n
-        #CSLeastSquare
-        v = U*V(:,i)
-        for j in 1:r
-
-            a, b, c, d = quartic_function(M, U, V, j, i, r)
-            roots = roots_third_degree(4 * a, 3 * b, 2 * c, d)
-            y = Inf
-            new_x = V[j, i]
-            for root in roots
-                y_test = calculate_function(a, b, c, d, root)
-                if y_test < y
-                    y = y_test
-                    new_x = root
-                end
-            end
-            V[j, i] = new_x
-
-        end
+    for j in 1:n
+        V = cs_least_square(M, U, V, r, j)
     end
     return V
 end
 
 function coordinate_descent(max_iterations, M, U, V, alpha)
-    for iteration in 1:max_iterations
-        erreur_prec = norm(M - (U * V).^2)
+    for _ in 1:max_iterations
+        prev_error = norm(M - (U * V).^2)
         V = optimise_v(M, U, V)
         U = optimise_v(M', V', U')'
-        erreur = norm(M - (U * V).^2)
-        if erreur > alpha * erreur_prec
+        error = norm(M - (U * V).^2)
+        if error > alpha * prev_error
             break
         end
     end

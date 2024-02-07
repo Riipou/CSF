@@ -1,11 +1,13 @@
 using MAT
-using NMF
-include("function_CD.jl")
+include("../algorithms/function_CD.jl")
 #Alors, 361x2429 ce sera peut-être trop grand pour ton algo, donc tu peux sélectionner une sous-matrice de taille 50x100 par exemple.
 
 function CBCL_test()
+
+    file_path = "data sets/CBCL.mat"
+
     # Load the .mat file
-    data = matread("CBCL.mat")
+    data = matread(file_path)
 
     # Access variables in the .mat file
     M = data["X"]
@@ -14,7 +16,7 @@ function CBCL_test()
         r = 10
         nb_tests = 20
         max_iterations = 10000
-        alpha = 0.1
+        alpha = 0.9999
         nb_good = 0
         nb_good_nmf = 0
         best_error = Inf
@@ -29,16 +31,6 @@ function CBCL_test()
             if norm(M - (U * V).^2)/norm(M) < best_error
                 best_error = norm(M - (U * V).^2)/norm(M)
             end
-            nmf_model = NMF.fit(M, r)
-            # Get the factorized matrices W and H
-            W = nmf_model.W
-            H = nmf_model.H
-            if norm(M - (W * H))/norm(M) < 1e-3
-                nb_good_nmf += 1
-            end
-            if norm(M - (W * H))/norm(M) < best_error_NMFs
-                best_error_NMF = norm(M - (W * H))/norm(M)
-            end
         end
         accuracy = nb_good/nb_tests
         accuracy_nmf = nb_good_nmf/nb_tests
@@ -50,5 +42,4 @@ function CBCL_test()
         write(file, "accuracy=$(best_error_NMF * 100)%\n")
     end
 end
-
 CBCL_test()

@@ -1,4 +1,4 @@
-include("function_CD.jl")
+include("../algorithms/function_CD.jl")
 
 function squared_factorisation(m, n, r,nb_tests)
     max_iterations = 10000
