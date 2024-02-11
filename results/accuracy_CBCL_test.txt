@@ -1,6 +1,0 @@
-CSF
-accuracy=0.0%
-best_error=0.1551816208085328
-NMF
-accuracy=0.0%
-accuracy=Inf%

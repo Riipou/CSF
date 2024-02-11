@@ -51,6 +51,7 @@ function init_matrix(M, r, choice)
         V = rand(r, size(M, 2))
     elseif choice == "SVD"
         U, S, V = svd(M)
+        V = V'
         U = U[:, 1:r]
         V = V[1:r, :]
         U = U * Diagonal(S[1:r])
@@ -102,13 +103,16 @@ function optimise_v(M, U, V)
 end
 
 function coordinate_descent(max_iterations, M, U, V, alpha)
-    for _ in 1:max_iterations
-        prev_error = norm(M - (U * V).^2)
+    prev_error = norm(M - (U * V).^2)
+    for ite in 1:max_iterations
         V = optimise_v(M, U, V)
         U = optimise_v(M', V', U')'
         error = norm(M - (U * V).^2)
-        if error > alpha * prev_error
-            break
+        if ite % 10 == 0
+            if error > alpha * prev_error
+                break
+            end
+            prev_error = norm(M - (U * V).^2)
         end
     end
     return U, V

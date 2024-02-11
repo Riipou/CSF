@@ -1,9 +1,20 @@
-using MAT
 include("../algorithms/function_CD.jl")
-#Alors, 361x2429 ce sera peut-être trop grand pour ton algo, donc tu peux sélectionner une sous-matrice de taille 50x100 par exemple.
+include("../algorithms/giant/GIANT.jl")
 
-function CBCL_test()
+using .GIANT
+using MAT
+using Random
 
+function CBCL_test(
+    alpha::Float64,
+    r::Int,
+    nb_tests::Int;
+    max_iterations::Int = 10000,
+    submatrix::Bool = false)
+    
+    # Choice of random seed
+    Random.seed!(2024)
+    # Path of data set
     file_path = "data sets/CBCL.mat"
 
     # Load the .mat file
@@ -12,15 +23,23 @@ function CBCL_test()
     # Access variables in the .mat file
     M = data["X"]
 
-    open("results/accuracy_CBCL_test.txt", "w") do file
-        r = 10
-        nb_tests = 20
-        max_iterations = 10000
-        alpha = 0.9999
+    # Usage of a submatrix
+    if submatrix
+        M = M[1:50,1:100]
+    end
+
+    open("results/accuracy_CBCL_test_submatrix=$(submatrix)_alpha=$(alpha).txt", "w") do file
+
+        # Definition of variables
         nb_good = 0
         nb_good_nmf = 0
         best_error = Inf
-        best_error_NMF = Inf
+        best_error_nmf = Inf
+        m,n = size(M)
+        U = zeros(m,r)
+        V = zeros(r,n)
+
+        # CSF loop
         for i in 1:nb_tests
             println(i)
             U, V = init_matrix(M, r, "random")
@@ -32,14 +51,42 @@ function CBCL_test()
                 best_error = norm(M - (U * V).^2)/norm(M)
             end
         end
+        best_U = U
+        best_V = V
+        
+        # NMF loop
+        for i in 1:nb_tests
+            println(i)
+            W, H = nmf(M,r)
+            if norm(M - W*H)/ norm(M) < 1e-3
+                nb_good_nmf += 1
+            end
+            if norm(M - W*H)/norm(M) < best_error_nmf
+                best_error_nmf = norm(M - W*H)/norm(M)
+            end
+        end
+
+        U, V = init_matrix(M, r, "SVD")
+        U, V= coordinate_descent(max_iterations, M, U, V, alpha)
+
+        # Calculation of accuracies
         accuracy = nb_good/nb_tests
         accuracy_nmf = nb_good_nmf/nb_tests
-        write(file, "CSF\n")
+
+        # Results
+        write(file, "CSF (Random initialization)\n")
         write(file, "accuracy=$(accuracy * 100)%\n")
-        write(file, "best_error=$(best_error)\n")
+        write(file, "best_error=$(best_error* 100)%\n")
+        write(file, "CSF (SVD initialization)\n")
+        write(file, "error svd : $((norm(M - (U * V).^2)/norm(M)) * 100)%\n")
         write(file, "NMF\n")
         write(file, "accuracy=$(accuracy_nmf * 100)%\n")
-        write(file, "accuracy=$(best_error_NMF * 100)%\n")
+        write(file, "accuracy=$(best_error_nmf * 100)%\n")
+        write(file,"U : $(best_U)\n")
+        write(file,"V : $(best_V)\n")
     end
 end
-CBCL_test()
+alpha_value = 0.9999
+r_value = 10
+nb_tests_value = 20
+CBCL_test(alpha_value, r_value, nb_tests_value)
