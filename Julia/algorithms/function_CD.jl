@@ -1,6 +1,22 @@
-using LinearAlgebra
+using LinearAlgebra 
 
 function roots_third_degree(a, b, c, d)
+    
+    if a == 0
+        if b == 0
+            root1 = -d/c
+            return [root1]
+        end
+        delta = c^2-4*b*d
+        root1 = (-c + sqrt(delta))/ (2 * b)
+        root2 = (-c - sqrt(delta))/ (2 * b)
+        if root1 == root2
+            return [root1]
+        else
+            return [root1, root2]
+        end
+    end
+
     p = -(b^2 / (3 * a^2)) + c / a
     q = ((2 * b^3) / (27 * a^3)) - ((9 * c * b) / (27 * a^2)) + (d / a)
     delta = -(4 * p^3 + 27 * q^2)
@@ -34,7 +50,8 @@ function roots_third_degree(a, b, c, d)
             return [root1, root2]
         end
     else
-        phi = acos(-q / 2 * sqrt(-27 / (p^3)))
+        epsilon = -1e-300
+        phi = acos(-q / 2 * sqrt(-27 / (p^3 + epsilon)))
         z1 = 2 * sqrt(-p / 3) * cos(phi / 3)
         z2 = 2 * sqrt(-p / 3) * cos((phi + 2 * π) / 3)
         z3 = 2 * sqrt(-p / 3) * cos((phi + 4 * π) / 3)
@@ -49,18 +66,19 @@ function init_matrix(M, r, choice)
     if choice == "random"
         U = rand(size(M, 1), r)
         V = rand(r, size(M, 2))
+        A = (U*V).^2
+        a = sum(A[:].*M[:])/sum(A[:].^2)
+        U *= a
+        V *= a
     elseif choice == "SVD"
         U, S, V = svd(M)
         V = V'
         U = U[:, 1:r]
         V = V[1:r, :]
-        U = U * Diagonal(S[1:r])
+        U = U * Diagonal(sqrt.(S[1:r]))
+        V = Diagonal(sqrt.(S[1:r])) * V
     end
     return U, V
-end
-
-function calculate_function(a, b, c, d, x)
-    return a * x^4 + b * x^3 + c * x^2 + d * x
 end
 
 function cs_least_square(M, U, V, r, j)
@@ -82,7 +100,7 @@ function cs_least_square(M, U, V, r, j)
         y = Inf
         new_x = V[p, j]
         for root in roots
-            y_test = calculate_function(a, b, c, d, root)
+            y_test = a * root^4 + b * root^3 + c * root^2 + d * root
             if y_test < y
                 y = y_test
                 new_x = root
@@ -102,18 +120,37 @@ function optimise_v(M, U, V)
     return V
 end
 
-function coordinate_descent(max_iterations, M, U, V, alpha)
+function coordinate_descent(
+    max_iterations::Int,
+    M::Matrix,
+    U::Matrix,
+    V::Matrix;
+    max_time:: Int = Inf,
+    alpha:: Float64 = Float64(1))
+
     prev_error = norm(M - (U * V).^2)
+    start = time()
+
     for ite in 1:max_iterations
+        
         V = optimise_v(M, U, V)
         U = optimise_v(M', V', U')'
+
         error = norm(M - (U * V).^2)
-        if ite % 10 == 0
+
+        if ite % 10 == 0 && max_time == Inf
             if error > alpha * prev_error
+                println("alpha stop")
                 break
             end
             prev_error = norm(M - (U * V).^2)
         end
+
+        if time()-start >= max_time
+            println("time stop")
+            break
+        end
+        
     end
     return U, V
 end

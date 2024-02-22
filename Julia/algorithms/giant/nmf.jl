@@ -13,7 +13,6 @@ function nmf(X::AbstractMatrix{T},
              ) where T <: AbstractFloat
     # Constants
     m, n = size(X)
-
     # If not provided, init W and H randomly
     W0 = length(W0) == 0 ? rand(m, r) : W0
     W = copy(W0)
@@ -24,6 +23,7 @@ function nmf(X::AbstractMatrix{T},
     # Main NMF loop
     times = zeros(Float64, maxiter)
     errors = zeros(Float64, maxiter)
+    start_nmf = time()
     for it in 1:maxiter
         if benchmark
             times[it] = @elapsed begin
@@ -37,6 +37,9 @@ function nmf(X::AbstractMatrix{T},
         else
             updaterW(X, W, Ht; args...)
             updaterH(X, W, Ht; args...)
+        end
+        if time()-start_nmf >= 60
+            break
         end
     end
     if benchmark
