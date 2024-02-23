@@ -1,0 +1,56 @@
+Matrix : 10 x 10
+accuracy for r = 3 : 1.06%
+best error for r = 3 : 1.0312256375271389e-13
+accuracy for r = 2 : 0.63%
+best error for r = 2 : 1.0283226772935403e-14
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6560196035315631
+Matrix : 9 x 9
+accuracy for r = 3 : 3.0700000000000003%
+best error for r = 3 : 2.347967647995111e-14
+accuracy for r = 2 : 2.42%
+best error for r = 2 : 1.3168770842593714e-14
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6563009437844568
+Matrix : 8 x 8
+accuracy for r = 3 : 6.7299999999999995%
+best error for r = 3 : 1.2358060191856374e-14
+accuracy for r = 2 : 5.92%
+best error for r = 2 : 2.359164528093946e-15
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.656698410767586
+Matrix : 7 x 7
+accuracy for r = 3 : 11.74%
+best error for r = 3 : 3.3932267613875747e-15
+accuracy for r = 2 : 14.680000000000001%
+best error for r = 2 : 2.2347147466746538e-15
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6572869828185236
+Matrix : 6 x 6
+accuracy for r = 3 : 18.84%
+best error for r = 3 : 7.127240138577169e-16
+accuracy for r = 2 : 21.37%
+best error for r = 2 : 4.917727577865595e-16
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6582149234978123
+Matrix : 5 x 5
+accuracy for r = 3 : 27.400000000000002%
+best error for r = 3 : 7.91666156253908e-16
+accuracy for r = 2 : 36.91%
+best error for r = 2 : 4.526290441211208e-16
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6598129198040363
+Matrix : 4 x 4
+accuracy for r = 3 : 46.52%
+best error for r = 3 : 4.093819424515777e-5
+accuracy for r = 2 : 30.240000000000002%
+best error for r = 2 : 2.9971690602015924e-11
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6629634281068638
+Matrix : 3 x 3
+accuracy for r = 3 : 83.08%
+best error for r = 3 : 1.2400673115949597e-5
+accuracy for r = 2 : 57.43000000000001%
+best error for r = 2 : 2.0545280711200314e-5
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6708626500605881

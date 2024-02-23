@@ -125,29 +125,28 @@ function coordinate_descent(
     M::Matrix,
     U::Matrix,
     V::Matrix;
-    max_time:: Int = Inf,
-    alpha:: Float64 = Float64(1))
+    max_time:: Int = 0,
+    alpha:: Float64 = Inf)
 
+    if max_time == 0
+        max_time = Inf
+    end
     prev_error = norm(M - (U * V).^2)
     start = time()
-
     for ite in 1:max_iterations
         
         V = optimise_v(M, U, V)
         U = optimise_v(M', V', U')'
 
         error = norm(M - (U * V).^2)
-
-        if ite % 10 == 0 && max_time == Inf
+        if ite % 10 == 0
             if error > alpha * prev_error
-                println("alpha stop")
                 break
             end
             prev_error = norm(M - (U * V).^2)
         end
-
+       
         if time()-start >= max_time
-            println("time stop")
             break
         end
         

@@ -1,5 +1,7 @@
 include("../algorithms/function_CD.jl")
 
+using Random
+
 function squared_factorisation(
     m::Int,
     n::Int,
@@ -17,7 +19,7 @@ function squared_factorisation(
         M = (U * V).^2
         U_rand, V_rand = init_matrix(M, r, "random")
         U_svd, V_svd = init_matrix(M, r, "SVD")
-        U_rand, V_rand = coordinate_descent(max_iterations, M, U_rand, V_rand, alpha = alpha)
+        U_rand, V_rand = coordinate_descent(max_iterations,M,U_rand,V_rand,alpha=alpha)
         U_svd, V_svd = coordinate_descent(max_iterations, M, U_svd, V_svd, alpha = alpha)
 
         if norm(M - (U_rand * V_rand).^2) / norm(M) < 1e-3
@@ -28,14 +30,16 @@ function squared_factorisation(
         end
     end
     
-    return [nb_good_rand / nb_tests,nb_good_svd/nb_tests]
+    return [nb_good_rand/nb_tests, nb_good_svd/nb_tests]
 end
 
 function random_test()
+    # Choice of random seed
+    Random.seed!(2024)
 
     file_path = "synthetic data"
     max_iterations = 10000
-    alpha = 0.99
+    alpha = 0.9999
     r = 2
     values = [5, 10, 50, 100]
     nb_tests = 10
@@ -62,6 +66,8 @@ function random_test()
 end
 
 function multiple_test()
+    # Choice of random seed
+    Random.seed!(2024)
     r = 2
     values = [5, 10, 50, 100]
     alpha = 0.99
@@ -77,5 +83,5 @@ function multiple_test()
         end
     end
 end
-
+multiple_test()
 random_test()

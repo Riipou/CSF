@@ -1,10 +1,16 @@
 include("../algorithms/function_CD.jl")
 include("../algorithms/slackgon.jl")
 
+using Random
+
 function multiple_slackgon_matrix()
+    
+    # Choice of random seed
+    Random.seed!(2024)
+
     nb_tests = 10^3
     max_n = 10
-    alpha = 0.99
+    alpha = 0.99999
     file_path = "slack matrices of n-gons"
     open("results/$(file_path)/slackgon_matrix_aplha=$(alpha).txt", "w") do file
         for i in max_n:-1:3

@@ -1,0 +1,12 @@
+Matrix mxn : 5
+for random method accuracy=62.0%
+for svd accuracy=93.0%
+Matrix mxn : 10
+for random method accuracy=84.0%
+for svd accuracy=99.0%
+Matrix mxn : 50
+for random method accuracy=87.0%
+for svd accuracy=100.0%
+Matrix mxn : 100
+for random method accuracy=92.0%
+for svd accuracy=100.0%

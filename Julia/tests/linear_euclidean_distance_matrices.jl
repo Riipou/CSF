@@ -1,4 +1,5 @@
 include("../algorithms/function_CD.jl")
+using Random
 
 function euclidean_distance_matrix(n)
     distance_matrix = zeros(n,n)
@@ -11,6 +12,9 @@ function euclidean_distance_matrix(n)
 end
 
 function multiple_distance_matrix()
+    # Choice of random seed
+    Random.seed!(2024)
+    
     nb_tests = 10^4
     max_n = 10
     alpha = 0.99
