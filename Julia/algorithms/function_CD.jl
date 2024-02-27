@@ -67,9 +67,9 @@ function init_matrix(M, r, choice)
         U = rand(size(M, 1), r)
         V = rand(r, size(M, 2))
         A = (U*V).^2
-        a = sum(A[:].*M[:])/sum(A[:].^2)
-        U *= a
-        V *= a
+        lambda = sum(A[:].*M[:])/sum(A[:].^2)
+        U *= lambda
+        V *= lambda
     elseif choice == "SVD"
         U, S, V = svd(M)
         V = V'

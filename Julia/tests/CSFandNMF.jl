@@ -140,6 +140,11 @@ function CSFandNMF_test(
         end
 end
 
+A = open_dataset("CBCLfacialfeatures")
+nonzero_count = sum(!iszero, A)
+total_count = length(A)
+density_A = nonzero_count / total_count
+print(density_A)
 #= r_values = [10, 20, 49]
 dataset = "CBCL"
 for r in r_values
@@ -152,7 +157,7 @@ r_values = [10, 20]
 dataset = "TDT2"
 for r in r_values
     max_time = 60
-    nb_tests_value = 1
+    nb_tests_value = 10
     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
 end
 
@@ -172,9 +177,9 @@ end =#
 #     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
 # end
 
-# CSF = [69.02355281775884,39.62659232108218,24.74901295645741,15.875810104379825,10.328679815662182,6.598107504749584,4.022382986385923,2.272903001876741,1.1014105812542914,0.430715734816788]
-# NMF = [89.6452978286602,81.00895769209575,72.72404199224063,64.63757274336808,56.69446187892267,48.348132536501964,39.80084952955188,30.0702316706153,19.15593668585843,5.449378571461825]
-# rank = [10,20,30,40,50,60,70,80,90,100]
-# plot(rank, CSF, label="CSF", xlabel="Rank", ylabel="Average Relative Error", linewidth=2)
-# plot!(rank, NMF, label="NMF", linewidth=2)
-# savefig("plot.png")
+CSF = [69.02355281775884,39.62659232108218,24.74901295645741,15.875810104379825]
+NMF = [89.6452978286602,81.00895769209575,72.72404199224063,64.63757274336808]
+rank = [10,20,30,40]
+plot(rank, CSF, label="CSF", xlabel="Rank", ylabel="Average Relative Error", linewidth=2)
+plot!(rank, NMF, label="NMF", linewidth=2)
+savefig("plot.png")

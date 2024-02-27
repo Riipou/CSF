@@ -7,23 +7,7 @@
     <list default="true" id="c196e5cc-d298-4585-88c9-0d6a4b972f20" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Julia/algorithms/function_CD.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/algorithms/function_CD.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Julia/algorithms/giant/nmf.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/algorithms/giant/nmf.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Julia/tests/CBCL.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/tests/CBCL.jl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_CBCL_test_submatrix=false_alpha=0.99.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_CBCL_test_submatrix=false_alpha=0.9999.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_CBCL_test_submatrix=true_alpha=0.99.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_CBCL_test_submatrix=true_alpha=0.9999.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_CBCL_test_submatrix=true_alpha=0.999999.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_multiple_tests_julia.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_multiple_tests_python.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/accuracy_random_tests_julia.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/distance_matrix_multiple_test.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/slackgon_matrix_multiple_test_alpha=0.9999.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/slackgon_matrix_multiple_test_aplha_0.99999999_5.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/slackgon_matrix_multiple_test_aplha_0.999999_7and5.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/slackgon_matrix_multiple_test_aplha_0.999999_7and5_2.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/slackgon_matrix_multiple_test_aplha_0.99999_7-3.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/results/slackgon_matrix_multiple_tests.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Julia/tests/CSFandNMF.jl" beforeDir="false" afterPath="$PROJECT_DIR$/Julia/tests/CSFandNMF.jl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -218,6 +202,7 @@
       <workItem from="1704906379322" duration="46000" />
       <workItem from="1705489298731" duration="807000" />
       <workItem from="1708288453651" duration="3000" />
+      <workItem from="1709022501455" duration="31000" />
     </task>
     <servers />
   </component>
