@@ -6,6 +6,7 @@ using MAT
 using Random
 using SparseArrays
 using Plots
+using Statistics
 
 function open_dataset(
     dataset::String)
@@ -43,7 +44,7 @@ function CSFandNMF_test(
 
     if dataset == "sparse"
         # Generate a sparse matrix of size 200-by-200 with density 0.01
-        M = Matrix(sprandn(1000, 1000, 0.01))
+        M = Matrix(sprandn(200, 200, 0.01))
     else
         # Open data set
         M = open_dataset(dataset)
@@ -57,8 +58,8 @@ function CSFandNMF_test(
     open("results/sparse_dataset/$(dataset)_r=$(r)_submatrix=$(submatrix)_max_time=$(max_time).txt", "w") do file
 
         # Definition of variables
-        average_error = 0
-        average_error_nmf = 0
+        errors = []
+        errors_nmf = []
 
         m,n = size(M)
         U = zeros(m,r)
@@ -75,7 +76,7 @@ function CSFandNMF_test(
                 worst_U = U
                 worst_V = V
             end
-            average_error += norm(M - (U * V).^2)/norm(M)
+            push!(errors, norm(M - (U * V).^2)/norm(M))
             if norm(M - (U * V).^2)/norm(M) < norm(M - (best_U * best_V).^2)/norm(M)
                 best_U = U
                 best_V = V
@@ -85,16 +86,16 @@ function CSFandNMF_test(
                 worst_V = V
             end
         end
-        
+
         # NMF loop
         for i in 1:nb_tests
             println(i)
             W, H = nmf(M, r, maxiter = 1000000)
-            average_error_nmf += norm(M - W*H)/norm(M)
+            push!(errors_nmf, norm(M - W*H)/norm(M))
         end
 
-        average_error /= nb_tests
-        average_error_nmf /= nb_tests
+        average_error = sum(errors)/nb_tests
+        average_error_nmf = sum(errors_nmf)/nb_tests
 
         # SVD initialization
         U_0, V_0 = init_matrix(M, r, "SVD")
@@ -124,11 +125,13 @@ function CSFandNMF_test(
 
         # Results
         write(file, "CSF (Random initialization)\n")
-        write(file, "average error = $(average_error* 100)%\n")
+        write(file, "average error = $(average_error * 100)%\n")
+        write(file, "standard deviation = $(std(errors)*100)%\n")
         write(file, "CSF (SVD initialization)\n")
         write(file, "error = $((norm(M - (U * V).^2)/norm(M)) * 100)%\n")
         write(file, "NMF (Random initialization)\n")
         write(file, "average error = $(average_error_nmf * 100)%\n")
+        write(file, "standard deviation = $(std(errors_nmf)*100)%\n")
         write(file, "NMF (SVD initialization)\n")
         write(file, "error = $((norm(M - W*H)/norm(M))* 100)%")
         
@@ -140,12 +143,7 @@ function CSFandNMF_test(
         end
 end
 
-A = open_dataset("CBCLfacialfeatures")
-nonzero_count = sum(!iszero, A)
-total_count = length(A)
-density_A = nonzero_count / total_count
-print(density_A)
-#= r_values = [10, 20, 49]
+r_values = [10, 20, 49]
 dataset = "CBCL"
 for r in r_values
     max_time = 60
@@ -153,33 +151,33 @@ for r in r_values
     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
 end
 
-r_values = [10, 20]
-dataset = "TDT2"
-for r in r_values
-    max_time = 60
-    nb_tests_value = 10
-    CSFandNMF_test(max_time, r, nb_tests_value, dataset)
-end
-
-r_values = [10, 20]
-dataset = "sparse"
-for r in r_values
-    max_time = 60
-    nb_tests_value = 10
-    CSFandNMF_test(max_time, r, nb_tests_value, dataset)
-end =#
-
 # r_values = [10, 20]
-# dataset = "CBCLfacialfeatures"
+# dataset = "TDT2"
 # for r in r_values
 #     max_time = 60
 #     nb_tests_value = 10
 #     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
 # end
 
-CSF = [69.02355281775884,39.62659232108218,24.74901295645741,15.875810104379825]
-NMF = [89.6452978286602,81.00895769209575,72.72404199224063,64.63757274336808]
-rank = [10,20,30,40]
-plot(rank, CSF, label="CSF", xlabel="Rank", ylabel="Average Relative Error", linewidth=2)
-plot!(rank, NMF, label="NMF", linewidth=2)
-savefig("plot.png")
+# r_values = [10, 20]
+# dataset = "sparse"
+# for r in r_values
+#     max_time = 60
+#     nb_tests_value = 10
+#     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
+# end 
+
+r_values = [10, 20]
+dataset = "CBCLfacialfeatures"
+for r in r_values
+    max_time = 60
+    nb_tests_value = 10
+    CSFandNMF_test(max_time, r, nb_tests_value, dataset)
+end
+
+# CSF = [69.02355281775884,39.62659232108218,24.74901295645741,15.875810104379825]
+# NMF = [89.6452978286602,81.00895769209575,72.72404199224063,64.63757274336808]
+# rank = [10,20,30,40]
+# plot(rank, CSF, label="CSF", xlabel="Rank", ylabel="Average Relative Error", linewidth=2)
+# plot!(rank, NMF, label="NMF", linewidth=2)
+# savefig("plot.png")
