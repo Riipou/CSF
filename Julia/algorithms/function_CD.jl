@@ -1,26 +1,29 @@
 using LinearAlgebra 
-
+function fourth_degree_polynomial(a, b, c, d, x)
+    return a*x^4+b*x^3+c*x^2+d*x
+end
 function roots_third_degree(a, b, c, d)
     
     if a == 0
         if b == 0
             root1 = -d/c
-            return [root1]
+            return root1
         end
         delta = c^2-4*b*d
         root1 = (-c + sqrt(delta))/ (2 * b)
         root2 = (-c - sqrt(delta))/ (2 * b)
-        if root1 == root2
-            return [root1]
+        f_root1 = fourth_degree_polynomial(a, b, c, d, root1)
+        f_root2 = fourth_degree_polynomial(a, b, c, d, root2)
+        if argmin([f_root1, f_root2]) == 1
+            return root1
         else
-            return [root1, root2]
+            return root2
         end
     end
 
     p = -(b^2 / (3 * a^2)) + c / a
     q = ((2 * b^3) / (27 * a^3)) - ((9 * c * b) / (27 * a^2)) + (d / a)
     delta = -(4 * p^3 + 27 * q^2)
-    
     if delta < 0
         u = (-q + sqrt(-delta / 27)) / 2
         v = (-q - sqrt(-delta / 27)) / 2
@@ -39,15 +42,21 @@ function roots_third_degree(a, b, c, d)
             v = 0
         end
         root1 = u + v - (b / (3 * a))
-        return [root1]
+        return root1
     elseif delta == 0
         if p == q == 0
             root1 = 0
-            return [root1]
+            return root1
         else
             root1 = (3 * q) / p
             root2 = (-3 * q) / (2 * p)
-            return [root1, root2]
+            f_root1 = fourth_degree_polynomial(a, b, c, d, root1)
+            f_root2 = fourth_degree_polynomial(a, b, c, d, root2)
+            if argmin([f_root1, f_root2]) == 1
+                return root1
+            else
+                return root2
+            end
         end
     else
         epsilon = -1e-300
@@ -58,7 +67,16 @@ function roots_third_degree(a, b, c, d)
         root1 = z1 - (b / (3 * a))
         root2 = z2 - (b / (3 * a))
         root3 = z3 - (b / (3 * a))
-        return [root1, root2, root3]
+        f_root1 = fourth_degree_polynomial(a, b, c, d, root1)
+        f_root2 = fourth_degree_polynomial(a, b, c, d, root2)
+        f_root3 = fourth_degree_polynomial(a, b, c, d, root3)
+        if argmin([f_root1, f_root2]) == 1
+            return root1
+        elseif argmin([f_root1, f_root2]) == 2
+            return root2
+        else
+            return root3
+        end
     end
 end
 
@@ -86,27 +104,17 @@ function cs_least_square(M, U, V, r, j)
     for p in 1:r
         R -= U[:,p]*V[p,j]
         m, _ = size(M)
-        a, b, c, d = 0, 0, 0, 0
+        c3, c2, c1, c0 = 0, 0, 0, 0
         for i in 1:m
-            a += U[i, p]^4
-            b += U[i, p]^3 * R[i]
-            c += 3 * U[i, p]^2 * R[i]^2 - U[i, p]^2 * M[i, j]
-            d += U[i, p] * R[i]^3 - M[i, j] * U[i, p] * R[i]
+            c3 += U[i, p]^4
+            c2 += U[i, p]^3 * R[i]
+            c1 += 3 * U[i, p]^2 * R[i]^2 - U[i, p]^2 * M[i, j]
+            c0 += U[i, p] * R[i]^3 - M[i, j] * U[i, p] * R[i]
         end
-        b *= 4
-        c *= 2
-        d *= 4
-        roots = roots_third_degree(4 * a, 3 * b, 2 * c, d)
-        y = Inf
-        new_x = V[p, j]
-        for root in roots
-            y_test = a * root^4 + b * root^3 + c * root^2 + d * root
-            if y_test < y
-                y = y_test
-                new_x = root
-            end
-        end
-        V[p, j] = new_x
+        c2 *= 4
+        c1 *= 2
+        c0 *= 4
+        V[p, j] = roots_third_degree(4 * c3, 3 * c2, 2 * c1, c0)
         R += U[:,p]*V[p,j]
     end
     return V

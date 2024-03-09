@@ -30,7 +30,15 @@ function open_dataset(
 
     return M
 end
-
+function info_dataset(dataset)
+    M = open_dataset(dataset)
+    println(dataset)
+    println(size(M))
+    non_zero_elements = count(!iszero, M)
+    println(non_zero_elements)
+    density = non_zero_elements / length(M)
+    println(density*100)
+end
 function CSFandNMF_test(
     max_time::Int,
     r::Int,
@@ -143,13 +151,18 @@ function CSFandNMF_test(
         end
 end
 
-r_values = [10, 20, 49]
-dataset = "CBCL"
-for r in r_values
-    max_time = 60
-    nb_tests_value = 10
-    CSFandNMF_test(max_time, r, nb_tests_value, dataset)
-end
+# datasets = ["CBCL", "CBCLfacialfeatures", "TDT2"]
+# for dataset in datasets
+#     info_dataset(dataset)
+# end
+
+# r_values = [10, 20, 49]
+# dataset = "CBCL"
+# for r in r_values
+#     max_time = 60
+#     nb_tests_value = 10
+#     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
+# end
 
 # r_values = [10, 20]
 # dataset = "TDT2"
@@ -167,17 +180,23 @@ end
 #     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
 # end 
 
-r_values = [10, 20]
-dataset = "CBCLfacialfeatures"
-for r in r_values
-    max_time = 60
-    nb_tests_value = 10
-    CSFandNMF_test(max_time, r, nb_tests_value, dataset)
-end
+# r_values = [10, 20]
+# dataset = "CBCLfacialfeatures"
+# for r in r_values
+#     max_time = 60
+#     nb_tests_value = 10
+#     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
+# end
 
-# CSF = [69.02355281775884,39.62659232108218,24.74901295645741,15.875810104379825]
-# NMF = [89.6452978286602,81.00895769209575,72.72404199224063,64.63757274336808]
-# rank = [10,20,30,40]
-# plot(rank, CSF, label="CSF", xlabel="Rank", ylabel="Average Relative Error", linewidth=2)
-# plot!(rank, NMF, label="NMF", linewidth=2)
+
+
+# CSF = [69.02355281775884, 39.62659232108218, 24.74901295645741, 15.875810104379825]
+# NMF = [89.6452978286602, 81.00895769209575, 72.72404199224063, 64.63757274336808]
+# rank = [10, 20, 30, 40]
+
+# plot(rank, CSF, label="CSF", xlabel="Rank", ylabel="Average Relative Error", linewidth=2, linestyle=:solid, marker=:circle, markersize=5)
+# plot!(rank, NMF, label="NMF", linewidth=2, linestyle=:dash, marker=:square, markersize=5)
+# xlabel!("Rank", titlefont=font(30))
+# ylabel!("Average Relative Error", titlefont=font(30))
+# plot!(legendfontsize=30)
 # savefig("plot.png")
