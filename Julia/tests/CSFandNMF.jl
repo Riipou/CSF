@@ -200,18 +200,18 @@ function sparse_matrices(
             for i in 1:size
                 if nnz(M[i, :]) > 1 && added > 0      
                     indices, _ = findnz(M[i,:])
-                    for indice in indices
-                        if nnz(M[:, indice]) > 1 && nnz(M[i, :]) > 1 && added > 0
-                            M[i,indice] = 0
+                    for index in indices
+                        if nnz(M[:, index]) > 1 && nnz(M[i, :]) > 1 && added > 0
+                            M[i,index] = 0
                             added -= 1
                         end
                     end 
                 end
                 if nnz(M[:, i]) > 1 && added > 0      
                     indices, _ = findnz(M[i,:])
-                    for indice in indices
-                        if nnz(M[indice, :]) > 1 && nnz(M[:, i]) > 1 && added > 0
-                            M[indice,i] = 0
+                    for index in indices
+                        if nnz(M[index, :]) > 1 && nnz(M[:, i]) > 1 && added > 0
+                            M[index,i] = 0
                             added -= 1
                         end
                     end 
