@@ -165,6 +165,9 @@ function sparse_matrices(
         # Definition of variables
         errors = []
         errors_nmf = []
+        
+        errors_svd = []
+        errors_nmf_svd = []
 
         U = zeros(size,r)
         V = zeros(r,size)
@@ -241,48 +244,57 @@ function sparse_matrices(
             W, H = nmf(M, r, maxiter = 1000000)
             push!(errors_nmf, norm(M - W*H)/norm(M))
 
+            # SVD initialization
+            U_0, V_0 = init_matrix(M, r, "SVD")
+            # CSF
+            U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
+            # NMF
+            W = copy(U_0)
+            H = copy(V_0)
+            # Best rank-one approximation
+            W[:, 1] .= abs.(U_0[:, 1])
+            H[1, :] .= abs.(V_0[1, :])
+            # Next (r-1) rank-one factors
+            i = 2
+            j = 2
+            while i <= r
+                if i % 2 == 0
+                    W[:, i] .= max.(U_0[:, j], 0)
+                    H[i, :] .= max.(V_0[j, :], 0)
+                else
+                    W[:, i] .= max.(-U_0[:, j], 0)
+                    H[i, :] .= max.(-V_0[j, :], 0)
+                    j += 1
+                end
+                i += 1
+            end
+            W, H = nmf(M, r, maxiter = 1000000, W0=W, H0=H)
+
+            push!(errors_svd, norm(M - (U * V).^2)/norm(M))
+            push!(errors_nmf_svd, norm(M - W*H)/norm(M))
+
         end
 
         average_error = sum(errors)/nb_tests
         average_error_nmf = sum(errors_nmf)/nb_tests
+        average_error_svd = sum(errors_svd)/nb_tests
+        average_error_nmf_svd = sum(errors_nmf_svd)/nb_tests
 
-        # SVD initialization
-        U_0, V_0 = init_matrix(M, r, "SVD")
-        # CSF
-        U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
-        # NMF
-        W = copy(U_0)
-        H = copy(V_0)
-        # Best rank-one approximation
-        W[:, 1] .= abs.(U_0[:, 1])
-        H[1, :] .= abs.(V_0[1, :])
-        # Next (r-1) rank-one factors
-        i = 2
-        j = 2
-        while i <= r
-            if i % 2 == 0
-                W[:, i] .= max.(U_0[:, j], 0)
-                H[i, :] .= max.(V_0[j, :], 0)
-            else
-                W[:, i] .= max.(-U_0[:, j], 0)
-                H[i, :] .= max.(-V_0[j, :], 0)
-                j += 1
-            end
-            i += 1
-        end
-        W, H = nmf(M, r, maxiter = 1000000, W0=W, H0=H)
+        
 
         # Results
         write(file, "CSF (Random initialization)\n")
         write(file, "average error = $(average_error * 100)%\n")
         write(file, "standard deviation = $(std(errors)*100)%\n")
         write(file, "CSF (SVD initialization)\n")
-        write(file, "error = $((norm(M - (U * V).^2)/norm(M)) * 100)%\n")
+        write(file, "error = $(average_error_svd * 100)%\n")
+        write(file, "standard deviation = $(std(errors_svd)*100)%\n")
         write(file, "NMF (Random initialization)\n")
         write(file, "average error = $(average_error_nmf * 100)%\n")
         write(file, "standard deviation = $(std(errors_nmf)*100)%\n")
         write(file, "NMF (SVD initialization)\n")
-        write(file, "error = $((norm(M - W*H)/norm(M))* 100)%")
+        write(file, "error = $(average_error_nmf_svd * 100)%")
+        write(file, "standard deviation = $(std(errors_nmf_svd)*100)%\n")
         
         # Create a dictionary containing the matrices
         data_dict = Dict("bU" => best_U, "bV" => best_V, "wU" => worst_U, "wV" => worst_V)
@@ -334,7 +346,7 @@ r_value = 10
 sparsity = 0.95
 max_time = 60
 nb_tests_value = 10
-sizes = collect(100:50:1000)
+sizes = [100, 250, 500, 750, 1000]
 for size in sizes
     sparse_matrices(nb_tests_value, size, r_value, max_time, sparsity = sparsity)
 end
