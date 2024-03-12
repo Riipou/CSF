@@ -150,15 +150,15 @@ function coordinate_descent(
     U_t = zeros(m, r)
 
     if !isempty(indices_V)
-        for i_v in indices_V
-            row_idx, col_idx = i_v
+        for idx_v in indices_V
+            row_idx, col_idx = idx_v
             V_t[row_idx, col_idx] = 1
         end
     end
 
     if !isempty(indices_U)
-        for i_u in indices_U
-            row_idx, col_idx = i_u
+        for idx_u in indices_U
+            row_idx, col_idx = idx_u
             U_t[row_idx, col_idx] = 1
         end
     end
