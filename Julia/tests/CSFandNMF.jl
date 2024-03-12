@@ -30,6 +30,7 @@ function open_dataset(
 
     return M
 end
+
 function info_dataset(dataset)
     M = open_dataset(dataset)
     println(dataset)
@@ -39,25 +40,21 @@ function info_dataset(dataset)
     density = non_zero_elements / length(M)
     println(density*100)
 end
+
 function CSFandNMF_test(
     max_time::Int,
     r::Int,
     nb_tests::Int,
     dataset::String;
-    max_iterations::Int = 10000,
+    max_iterations::Int = 100000,
     submatrix::Bool = false)
     
     # Choice of random seed
     Random.seed!(2024)
 
-    if dataset == "sparse"
-        # Generate a sparse matrix of size 200-by-200 with density 0.01
-        M = Matrix(sprandn(200, 200, 0.01))
-    else
-        # Open data set
-        M = open_dataset(dataset)
-    end
-
+    # Open data set
+    M = open_dataset(dataset)
+    
     # Usage of a submatrix
     if submatrix
         M = M[1:50,1:100]
@@ -151,6 +148,149 @@ function CSFandNMF_test(
         end
 end
 
+function sparse_matrices(
+    nb_tests:: Int,
+    size::Int,
+    r::Int, 
+    max_time::Int;
+    sparsity::Float64 = 0.05, 
+    max_iterations::Int = 100000
+    )
+
+    # Choice of random seed
+    Random.seed!(2024)
+
+    open("results/sparse_dataset/sparse_matrices_$(size)x$(size)_r=$(r)_max_time=$(max_time).txt", "w") do file
+
+        # Definition of variables
+        errors = []
+        errors_nmf = []
+
+        U = zeros(size,r)
+        V = zeros(r,size)
+        best_U, worst_U = copy(U), copy(U)
+        best_V, worst_V = copy(V), copy(V)
+
+        println("Size : ", size)
+        
+        for i in 1:nb_tests
+
+            println(i)
+
+            # Generate a sparse matrix of size size-by-size with density sparsity
+            M = sprandn(size, size, sparsity)
+
+            # Ensure at least one non-zero element per row and per column
+            added = 0
+            for i in 1:size
+                if nnz(M[i, :]) == 0
+                    j = rand(1:size)
+                    M[i, j] = rand()
+                    added += 1 
+                end
+            end
+
+            for j in 1:size
+                if nnz(M[:, j]) == 0
+                    i = rand(1:size)
+                    M[i, j] = rand()
+                    added += 1 
+                end
+            end
+            for i in 1:size
+                if nnz(M[i, :]) > 1 && added > 0      
+                    indices, _ = findnz(M[i,:])
+                    for indice in indices
+                        if nnz(M[:, indice]) > 1 && nnz(M[i, :]) > 1 && added > 0
+                            M[i,indice] = 0
+                            added -= 1
+                        end
+                    end 
+                end
+                if nnz(M[:, i]) > 1 && added > 0      
+                    indices, _ = findnz(M[i,:])
+                    for indice in indices
+                        if nnz(M[indice, :]) > 1 && nnz(M[:, i]) > 1 && added > 0
+                            M[indice,i] = 0
+                            added -= 1
+                        end
+                    end 
+                end
+            end
+
+            M = Matrix(M)
+            
+            # CSF
+
+            U, V = init_matrix(M, r, "random")
+            U, V = coordinate_descent(max_iterations, M, U, V, max_time = max_time)
+            if i == 1
+                worst_U = U
+                worst_V = V
+            end
+            push!(errors, norm(M - (U * V).^2)/norm(M))
+            if norm(M - (U * V).^2)/norm(M) < norm(M - (best_U * best_V).^2)/norm(M)
+                best_U = U
+                best_V = V
+            end
+            if norm(M - (U * V).^2)/norm(M) > norm(M - (worst_U * worst_V).^2)/norm(M)
+                worst_U = U
+                worst_V = V
+            end
+
+            W, H = nmf(M, r, maxiter = 1000000)
+            push!(errors_nmf, norm(M - W*H)/norm(M))
+
+        end
+
+        average_error = sum(errors)/nb_tests
+        average_error_nmf = sum(errors_nmf)/nb_tests
+
+        # SVD initialization
+        U_0, V_0 = init_matrix(M, r, "SVD")
+        # CSF
+        U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
+        # NMF
+        W = copy(U_0)
+        H = copy(V_0)
+        # Best rank-one approximation
+        W[:, 1] .= abs.(U_0[:, 1])
+        H[1, :] .= abs.(V_0[1, :])
+        # Next (r-1) rank-one factors
+        i = 2
+        j = 2
+        while i <= r
+            if i % 2 == 0
+                W[:, i] .= max.(U_0[:, j], 0)
+                H[i, :] .= max.(V_0[j, :], 0)
+            else
+                W[:, i] .= max.(-U_0[:, j], 0)
+                H[i, :] .= max.(-V_0[j, :], 0)
+                j += 1
+            end
+            i += 1
+        end
+        W, H = nmf(M, r, maxiter = 1000000, W0=W, H0=H)
+
+        # Results
+        write(file, "CSF (Random initialization)\n")
+        write(file, "average error = $(average_error * 100)%\n")
+        write(file, "standard deviation = $(std(errors)*100)%\n")
+        write(file, "CSF (SVD initialization)\n")
+        write(file, "error = $((norm(M - (U * V).^2)/norm(M)) * 100)%\n")
+        write(file, "NMF (Random initialization)\n")
+        write(file, "average error = $(average_error_nmf * 100)%\n")
+        write(file, "standard deviation = $(std(errors_nmf)*100)%\n")
+        write(file, "NMF (SVD initialization)\n")
+        write(file, "error = $((norm(M - W*H)/norm(M))* 100)%")
+        
+        # Create a dictionary containing the matrices
+        data_dict = Dict("bU" => best_U, "bV" => best_V, "wU" => worst_U, "wV" => worst_V)
+        # Save the dictionary to a .mat file
+        matwrite("results/sparse_dataset/matrices/sparse_matrices_$(size)x$(size)_r=$(r)_max_time=$(max_time).mat", data_dict)
+    end
+end
+
 # datasets = ["CBCL", "CBCLfacialfeatures", "TDT2"]
 # for dataset in datasets
 #     info_dataset(dataset)
@@ -172,13 +312,33 @@ end
 #     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
 # end
 
-# r_values = [10, 20]
-# dataset = "sparse"
-# for r in r_values
-#     max_time = 60
-#     nb_tests_value = 10
-#     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
-# end 
+r_value = 10
+sparsity = [0.50, 0.60, 0.70, 0.80, 0.90, 0.99]
+for s in sparsity
+    max_time = 60
+    nb_tests_value = 10
+    sparse_matrices(nb_tests_value, 1000, r_value, max_time, sparsity = s)
+end 
+
+r_values = [10,20]
+sparsity = 0.95
+
+for r in r_values
+    max_time = 60
+    nb_tests_value = 10
+    sparse_matrices(nb_tests_value, 200, r, max_time, sparsity = sparsity)
+end
+ 
+
+r_value = 10
+sparsity = 0.95
+max_time = 60
+nb_tests_value = 10
+sizes = collect(100:50:1000)
+for size in sizes
+    sparse_matrices(nb_tests_value, size, r_value, max_time, sparsity = sparsity)
+end
+
 
 # r_values = [10, 20]
 # dataset = "CBCLfacialfeatures"
