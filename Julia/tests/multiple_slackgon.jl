@@ -1,5 +1,5 @@
-include("../algorithms/function_CD.jl")
-include("../algorithms/slackgon.jl")
+include("../algorithms/CD.jl")
+include("../algorithms/functions.jl")
 
 using Random
 

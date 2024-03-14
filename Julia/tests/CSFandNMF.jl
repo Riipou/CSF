@@ -1,4 +1,5 @@
-include("../algorithms/function_CD.jl")
+include("../algorithms/CD.jl")
+include("../algorithms/functions.jl")
 include("../algorithms/giant/GIANT.jl")
 
 using .GIANT

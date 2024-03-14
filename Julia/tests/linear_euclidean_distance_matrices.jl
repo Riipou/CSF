@@ -1,4 +1,6 @@
-include("../algorithms/function_CD.jl")
+include("../algorithms/CD.jl")
+include("../algorithms/functions.jl")
+
 using Random
 
 function euclidean_distance_matrix(n)
