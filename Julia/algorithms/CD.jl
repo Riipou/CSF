@@ -14,8 +14,8 @@ function roots_third_degree(a, b, c, d)
         delta = c^2-4*b*d
         root1 = (-c + sqrt(delta))/ (2 * b)
         root2 = (-c - sqrt(delta))/ (2 * b)
-        f_root1 = fourth_degree_polynomial(a, b, c, d, root1)
-        f_root2 = fourth_degree_polynomial(a, b, c, d, root2)
+        f_root1 = fourth_degree_polynomial(a/4, b/3, c/2, d, root1)
+        f_root2 = fourth_degree_polynomial(a/4, b/3, c/2, d, root2)
         if argmin([f_root1, f_root2]) == 1
             return root1
         else
@@ -52,8 +52,8 @@ function roots_third_degree(a, b, c, d)
         else
             root1 = (3 * q) / p
             root2 = (-3 * q) / (2 * p)
-            f_root1 = fourth_degree_polynomial(a, b, c, d, root1)
-            f_root2 = fourth_degree_polynomial(a, b, c, d, root2)
+            f_root1 = fourth_degree_polynomial(a/4, b/3, c/2, d, root1)
+            f_root2 = fourth_degree_polynomial(a/4, b/3, c/2, d, root2)
             if argmin([f_root1, f_root2]) == 1
                 return root1
             else
@@ -69,9 +69,9 @@ function roots_third_degree(a, b, c, d)
         root1 = z1 - (b / (3 * a))
         root2 = z2 - (b / (3 * a))
         root3 = z3 - (b / (3 * a))
-        f_root1 = fourth_degree_polynomial(a, b, c, d, root1)
-        f_root2 = fourth_degree_polynomial(a, b, c, d, root2)
-        f_root3 = fourth_degree_polynomial(a, b, c, d, root3)
+        f_root1 = fourth_degree_polynomial(a/4, b/3, c/2, d, root1)
+        f_root2 = fourth_degree_polynomial(a/4, b/3, c/2, d, root2)
+        f_root3 = fourth_degree_polynomial(a/4, b/3, c/2, d, root3)
         if argmin([f_root1, f_root2, f_root3]) == 1
             return root1
         elseif argmin([f_root1, f_root2, f_root3]) == 2

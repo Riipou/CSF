@@ -93,11 +93,17 @@ function CSFandNMF_test(
             end
         end
 
+        best_W = zeros(m,r)
+        best_H = zeros(r,n)
         # NMF loop
         for i in 1:nb_tests
             println(i)
             W, H = nmf(M, r, maxiter = 1000000)
             push!(errors_nmf, norm(M - W*H)/norm(M))
+            if  norm(M - W*H)/norm(M) <  norm(M - best_W*best_H)/norm(M)
+                best_W = W
+                best_H = H
+            end
         end
 
         average_error = sum(errors)/nb_tests
@@ -142,7 +148,7 @@ function CSFandNMF_test(
         write(file, "error = $((norm(M - W*H)/norm(M))* 100)%")
         
         # Create a dictionary containing the matrices
-        data_dict = Dict("bU" => best_U, "bV" => best_V, "wU" => worst_U, "wV" => worst_V)
+        data_dict = Dict("bU" => best_U, "bV" => best_V,"M" => (best_U * best_V).^2,"X" => best_W*best_H, "wU" => worst_U, "wV" => worst_V)
         # Save the dictionary to a .mat file
         matwrite("results/sparse_dataset/matrices/$(dataset)_r=$(r)_submatrix=$(submatrix)_max_time=$(max_time).mat", data_dict)
 
@@ -315,13 +321,13 @@ end
 #     info_dataset(dataset)
 # end
 
-# r_values = [10, 20, 49]
-# dataset = "CBCL"
-# for r in r_values
-#     max_time = 60
-#     nb_tests_value = 10
-#     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
-# end
+r_values = [49]
+dataset = "CBCL"
+for r in r_values
+    max_time = 60
+    nb_tests_value = 10
+    CSFandNMF_test(max_time, r, nb_tests_value, dataset)
+end
 
 # r_values = [10, 20]
 # dataset = "TDT2"
@@ -339,13 +345,13 @@ for r in r_values
     sparse_matrices(nb_tests_value, 200, r, max_time)
 end =#
 
-r_value = 10
+#= r_value = 10
 max_time = 60
 nb_tests_value = 10
 density = [ 0.50, 0.40, 0.30, 0.20, 0.10, 0.01]
 for d in density
     sparse_matrices(nb_tests_value, 200, r_value, max_time, density = d, svd = false)
-end 
+end  =#
  
 
 #= r_value = 10
