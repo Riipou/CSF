@@ -321,13 +321,13 @@ end
 #     info_dataset(dataset)
 # end
 
-r_values = [49]
+#= r_values = [49]
 dataset = "CBCL"
 for r in r_values
     max_time = 60
     nb_tests_value = 10
     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
-end
+end =#
 
 # r_values = [10, 20]
 # dataset = "TDT2"
@@ -337,30 +337,30 @@ end
 #     CSFandNMF_test(max_time, r, nb_tests_value, dataset)
 # end
 
-#= r_values = [10,20]
+r_values = [10,20]
 
 for r in r_values
     max_time = 60
     nb_tests_value = 10
     sparse_matrices(nb_tests_value, 200, r, max_time)
-end =#
+end
 
-#= r_value = 10
+r_value = 10
 max_time = 60
 nb_tests_value = 10
 density = [ 0.50, 0.40, 0.30, 0.20, 0.10, 0.01]
 for d in density
     sparse_matrices(nb_tests_value, 200, r_value, max_time, density = d, svd = false)
-end  =#
+end 
  
 
-#= r_value = 10
+r_value = 10
 max_time = 60
 nb_tests_value = 10
 sizes = [100, 250, 500, 750, 1000]
 for size in sizes
     sparse_matrices(nb_tests_value, size, r_value, max_time, svd = false)
-end =#
+end
 
 
 # r_values = [10, 20]
