@@ -11,10 +11,10 @@ function multiple_slackgon_matrix()
     Random.seed!(2024)
 
     nb_tests = 10^3
-    max_n = 6
-    alpha = 0.99999
+    max_n = 10
+    alpha = 0.9999
     file_path = "slack matrices of n-gons"
-    open("results/$(file_path)/slackgon_matrix_aplha=$(alpha)_forbest6.txt", "w") do file
+    open("results/$(file_path)/slackgon_matrix_aplha=$(alpha).txt", "w") do file
         for i in max_n:-1:3
             println("Matrix of size : ",i)
             write(file, "Matrix : $i x $i\n")
@@ -54,5 +54,4 @@ function multiple_slackgon_matrix()
         end
     end
 end
-
 multiple_slackgon_matrix()

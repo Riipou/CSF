@@ -15,8 +15,8 @@ function squared_factorisation(
     nb_good_svd = 0
     
     for _ in 1:nb_tests
-        U = rand(m, r)
-        V = rand(r, n)
+        U = randn(m, r)
+        V = randn(r, n)
         M = (U * V).^2
         U_rand, V_rand = init_matrix(M, r, "random")
         U_svd, V_svd = init_matrix(M, r, "SVD")

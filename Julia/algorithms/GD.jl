@@ -1,6 +1,3 @@
-include("../algorithms/CD.jl")
-include("../algorithms/functions.jl")
-
 function BLS(
     max_iterations::Int,
     M::Matrix,
@@ -9,45 +6,45 @@ function BLS(
 
     m, r = size(U)
     r, n = size(V)
-    alpha_U = fill(1, m)
-    alpha_V = fill(1, n)
-    for _ in max_iterations
-        for j in n
-            V, alpha_V[j] = update_V(alpha_V[j], U, V, M, j)
+    U = convert(Matrix{Float64}, U)
+    V = convert(Matrix{Float64}, V)
+    alpha_V = []
+    alpha_U = []
+    step = 1.1
+    for j in 1:n
+        push!(alpha_V, step * (norm(V[:,j])/norm(grad(U, V[:,j], M[:,j]))))
+    end
+    for i in 1:m
+        push!(alpha_U, step * (norm(U[i,:])/norm(grad(V', U[i,:], M[i,:]))))
+    end
+    for _ in 1:max_iterations
+        for j in 1:n
+            V[:,j], alpha_V[j] = update_x(alpha_V[j], U, V[:,j], M[:,j])
         end
-        # for i in m
-        #     U[i,:], alpha_U[i] = update_x(alpha_U[i], V', U[i,:]', M[i,:]')'
-        # end
+        for i in 1:m
+            U[i,:], alpha_U[i] = update_x(alpha_U[i], V', U[i,:], M[i,:])
+        end
     end
 
+    return U, V
 end
 
-function update_V(alpha, U, V, M, j)
-    loss = loss_function(M, U, V)
+function update_x(alpha, A, x, b)
+    loss = loss_function(A, x, b)
     alpha *= 1.5
-    X = copy(V)
-    X[:,j] = V[:,j] - alpha * grad(U, V[:,j], M[:,j])
-    while loss_function(M, U, X) > loss
+    x2 = copy(x)
+    x2 = x - alpha * grad(A, x, b)
+    while loss_function(A, x2, b) > loss
         alpha /= 2
-        X[:,j] = V[:,j] - alpha * grad(U, V[:,j], M[:,j])
+        x2 = x - alpha * grad(A, x, b)
     end
-    return X, alpha
+    return x2, alpha
 end
 
-function loss_function(M, U, V)
-    return norm(M - (U * V).^2)
+function loss_function(A, x, b)
+    return norm((A * x).^2 - b)/norm(b)
 end
 
 function grad(A, x, b)
     return 4*A'*(((A*x).^2-b).*(A*x))
 end
-
-U = [1 2 3; 4 5 6; 7 8 9]
-
-V = [9 6 2 4; 4 2 1 3; 4 5 6 7]
-
-M = (U * V).^2
-
-U, V = init_matrix(M, 3, "random")
-
-BLS(10000, M, U, V)

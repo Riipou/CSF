@@ -26,7 +26,7 @@ function multiple_distance_matrix()
             println("Matrix of size : ",i)
             write(file, "Matrix : $i x $i\n")
             M = euclidean_distance_matrix(i)
-            for r in i-1:-1:1
+            for r in 3:-1:1
                 println("Rank : ",r)
                 nb_good = 0
                 best_error = Inf

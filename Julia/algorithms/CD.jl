@@ -1,4 +1,6 @@
-using LinearAlgebra 
+using LinearAlgebra
+include("functions.jl")
+import Random
 
 function fourth_degree_polynomial(a, b, c, d, x)
     return a*x^4+b*x^3+c*x^2+d*x
@@ -147,21 +149,29 @@ function coordinate_descent(
     if max_time == 0
         max_time = Inf
     end
-    prev_error = norm(M - (U * V).^2)
+    
+    if alpha <= 1
+        prev_error = norm(M - (U * V).^2)
+    end
+   
     start = time()
+
     for ite in 1:max_iterations
-        
+
         V = optimise_v(M, U, V, V_t)
         U = optimise_v(M', V', U', U_t')'
 
-        error = norm(M - (U * V).^2)
-        if ite % 10 == 0
+        if alpha <=1
+            error = norm(M - (U * V).^2)
+        end
+        
+        if ite % 10 == 0 && alpha <= 1
             if error > alpha * prev_error
                 break
             end
             prev_error = norm(M - (U * V).^2)
         end
-       
+
         if time()-start >= max_time
             break
         end
@@ -169,3 +179,94 @@ function coordinate_descent(
     end
     return U, V
 end
+
+function coordinate_descent_extrapoled(
+    max_iterations::Int,
+    M::Matrix,
+    U::Matrix,
+    V::Matrix;
+    max_time:: Int = 0,
+    alpha:: Float64 = Inf,
+    indices_V:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(),
+    indices_U:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}())
+
+    r, n = size(V)
+    V_t = zeros(r, n)
+
+    m, r = size(U)
+    U_t = zeros(m, r)
+
+    if !isempty(indices_V)
+        for idx_v in indices_V
+            row_idx, col_idx = idx_v
+            V_t[row_idx, col_idx] = 1
+        end
+    end
+
+    if !isempty(indices_U)
+        for idx_u in indices_U
+            row_idx, col_idx = idx_u
+            U_t[row_idx, col_idx] = 1
+        end
+    end
+    
+    if max_time == 0
+        max_time = Inf
+    end
+    
+    prev_error = norm(M - (U * V).^2)
+
+    start = time()
+
+    Up = copy(U)
+    Vp = copy(V)
+    Vtemp = copy(V)
+    Utemp = copy(U)
+    beta = 0.7
+    for ite in 1:max_iterations
+        V = optimise_v(M, U, V + beta * (V - Vp), V_t)
+        Vp = copy(Vtemp)
+        U = optimise_v(M', V', U' + beta * (U' - Up'), U_t')'
+        Up = copy(Utemp)
+        Utemp = copy(U)
+        Vtemp = copy(V)
+
+        error = norm(M - (U * V).^2)
+
+        if error > norm(M - (Up*Vp).^2)
+            V = optimise_v(M, Up, Vp, V_t)
+            U = optimise_v(M', V', Up', U_t')'
+            Utemp = copy(U)
+            Vtemp = copy(V)
+            error = norm(M - (U*V).^2)
+        end
+
+        if ite % 10 == 0 && alpha <= 1
+            if error > alpha * prev_error
+                break
+            end
+            prev_error = norm(M - (U * V).^2)
+        end
+        
+        if time()-start >= max_time
+            break
+        end           
+    end
+    return U, V
+end
+
+#= Random.seed!(2028)
+m = n = 250
+r = 3
+U = randn(m, r)
+V = randn(r, n)
+M = (U*V).^2
+U, V = init_matrix(M, 3, "random")
+U_1 = copy(U)
+V_1 = copy(V)
+U_2 = copy(U)
+V_2 = copy(V)
+U, V = coordinate_descent_extrapoled(100000, M, U_1, V_1, alpha = 0.9999)
+println(norm(M-(U*V).^2)/norm(M)) =#
+#= U, V = coordinate_descent(100000, M, U_2, V_2, alpha = 0.9999)
+println(norm(M-(U*V).^2)/norm(M)) =#
