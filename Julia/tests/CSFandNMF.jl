@@ -322,56 +322,54 @@ end
 # for dataset in datasets
 #     info_dataset(dataset)
 # end
-p_and_n = [false]
-for pn in p_and_n
-    r_values = [10,20,49]
-    dataset = "CBCL"
-    for r in r_values
-        max_time = 60
-        nb_tests_value = 10
-        CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = pn)
-    end
 
-    r_values = [10, 20]
-    dataset = "TDT2"
-    for r in r_values
-        max_time = 60
-        nb_tests_value = 10
-        CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = pn)
-    end
-
-    r_values = [10, 20]
-    dataset = "CBCLfacialfeatures"
-    for r in r_values
-        max_time = 60
-        nb_tests_value = 10
-        CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = pn)
-    end
-
-    r_values = [10,20]
-
-    for r in r_values
-        max_time = 60
-        nb_tests_value = 10
-        sparse_matrices(nb_tests_value, 200, r, max_time, p_and_n = pn)
-    end
-
-    r_value = 10
+r_values = [10,20,49]
+dataset = "CBCL"
+for r in r_values
     max_time = 60
     nb_tests_value = 10
-    density = [ 0.50, 0.40, 0.30, 0.20, 0.10, 0.01]
-    for d in density
-        sparse_matrices(nb_tests_value, 200, r_value, max_time, density = d, svd = false, p_and_n = pn)
-    end 
-    
+    CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = false)
+end
 
-    r_value = 10
+r_values = [10, 20]
+dataset = "TDT2"
+for r in r_values
     max_time = 60
     nb_tests_value = 10
-    sizes = [100, 250, 500, 750, 1000]
-    for size in sizes
-        sparse_matrices(nb_tests_value, size, r_value, max_time, svd = false, p_and_n = pn)
-    end
+    CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = false)
+end
+
+r_values = [10, 20]
+dataset = "CBCLfacialfeatures"
+for r in r_values
+    max_time = 60
+    nb_tests_value = 10
+    CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = false)
+end
+
+r_values = [10,20]
+
+for r in r_values
+    max_time = 60
+    nb_tests_value = 10
+    sparse_matrices(nb_tests_value, 200, r, max_time, p_and_n = true)
+end
+
+r_value = 10
+max_time = 60
+nb_tests_value = 10
+density = [ 0.50, 0.40, 0.30, 0.20, 0.10, 0.01]
+for d in density
+    sparse_matrices(nb_tests_value, 200, r_value, max_time, density = d, svd = false, p_and_n = true)
+end 
+
+
+r_value = 10
+max_time = 60
+nb_tests_value = 10
+sizes = [100, 250, 500, 750, 1000]
+for size in sizes
+    sparse_matrices(nb_tests_value, size, r_value, max_time, svd = false, p_and_n = true)
 end
 
 
