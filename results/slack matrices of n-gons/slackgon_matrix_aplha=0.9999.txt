@@ -1,44 +1,42 @@
 Matrix : 10 x 10
-accuracy for r = 9 : 50.1%
-best error for r = 9 : 4.282070803358214e-5
-accuracy for r = 8 : 0.5%
-best error for r = 8 : 0.00012993079220637407
+accuracy for r = 9 : 46.5%
+best error for r = 9 : 2.2381551278437065e-5
+accuracy for r = 8 : 1.2%
+best error for r = 8 : 0.00032351715159670795
 accuracy for r = 7 : 0.0%
-best error for r = 7 : 0.004057797614031284
+best error for r = 7 : 0.00642194718834792
 Matrix : 9 x 9
-accuracy for r = 8 : 40.5%
-best error for r = 8 : 2.0203353153510612e-5
-accuracy for r = 7 : 0.2%
-best error for r = 7 : 0.0008743191302600927
+accuracy for r = 8 : 37.8%
+best error for r = 8 : 3.318154532209442e-5
+accuracy for r = 7 : 0.3%
+best error for r = 7 : 0.0006164386563138615
 accuracy for r = 6 : 0.0%
-best error for r = 6 : 0.009533301125826923
+best error for r = 6 : 0.00799920230032978
 Matrix : 8 x 8
-accuracy for r = 7 : 35.199999999999996%
-best error for r = 7 : 2.9207858019038397e-5
-accuracy for r = 6 : 0.0%
-best error for r = 6 : 0.001372976814025433
+accuracy for r = 7 : 34.5%
+best error for r = 7 : 2.844638115173625e-5
+accuracy for r = 6 : 0.4%
+best error for r = 6 : 0.00021227219531643095
+accuracy for r = 5 : 0.0%
+best error for r = 5 : 0.013462826028956007
 Matrix : 7 x 7
-accuracy for r = 6 : 27.0%
-best error for r = 6 : 3.2017696646932566e-5
-accuracy for r = 5 : 0.2%
-best error for r = 5 : 0.0006946920985249838
-accuracy for r = 4 : 0.0%
-best error for r = 4 : 0.02457910010643392
+accuracy for r = 6 : 26.700000000000003%
+best error for r = 6 : 2.337309148764992e-5
+accuracy for r = 5 : 0.0%
+best error for r = 5 : 0.0014741875460694148
 Matrix : 6 x 6
-accuracy for r = 5 : 24.8%
-best error for r = 5 : 1.76632190935588e-5
-accuracy for r = 4 : 0.4%
-best error for r = 4 : 2.3713142684738026e-5
-accuracy for r = 3 : 0.0%
-best error for r = 3 : 0.05017924613625538
+accuracy for r = 5 : 26.6%
+best error for r = 5 : 1.6672742231860157e-5
+accuracy for r = 4 : 0.0%
+best error for r = 4 : 0.005068195103346847
 Matrix : 5 x 5
 accuracy for r = 4 : 0.0%
-best error for r = 4 : 0.0010947107306470377
+best error for r = 4 : 0.0010948109284599974
 Matrix : 4 x 4
-accuracy for r = 3 : 57.699999999999996%
-best error for r = 3 : 1.4342445439640249e-5
+accuracy for r = 3 : 56.2%
+best error for r = 3 : 9.353440737200935e-6
 accuracy for r = 2 : 0.0%
-best error for r = 2 : 0.16910197872576263
+best error for r = 2 : 0.16910197872576266
 Matrix : 3 x 3
 accuracy for r = 2 : 0.0%
-best error for r = 2 : 0.33333333333333287
+best error for r = 2 : 0.3333333333333329

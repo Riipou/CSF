@@ -1,9 +1,0 @@
-Matrix : 5 x 5
-accuracy for r = 4 : 0.0%
-best error for r = 4 : 0.0010938118959643885
-accuracy for r = 3 : 0.0%
-best error for r = 3 : 0.06841202049191773
-accuracy for r = 2 : 0.0%
-best error for r = 2 : 0.10262083158794891
-accuracy for r = 1 : 0.0%
-best error for r = 1 : 0.6580917332091331

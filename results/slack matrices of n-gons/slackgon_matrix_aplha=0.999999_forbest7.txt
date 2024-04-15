@@ -1,0 +1,13 @@
+Matrix : 7 x 7
+accuracy for r = 6 : 27.1%
+best error for r = 6 : 3.5513502067303974e-5
+accuracy for r = 5 : 0.0%
+best error for r = 5 : 0.0015964462915416275
+accuracy for r = 4 : 0.0%
+best error for r = 4 : 0.0251743192530669
+accuracy for r = 3 : 0.0%
+best error for r = 3 : 0.03830763271352025
+accuracy for r = 2 : 0.0%
+best error for r = 2 : 0.04992136182432945
+accuracy for r = 1 : 0.0%
+best error for r = 1 : 0.6173910221180329

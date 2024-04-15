@@ -1,7 +1,5 @@
 using LinearAlgebra
 include("functions.jl")
-import Random
-
 function fourth_degree_polynomial(a, b, c, d, x)
     return a*x^4+b*x^3+c*x^2+d*x
 end
@@ -123,7 +121,8 @@ function coordinate_descent(
     max_time:: Int = 0,
     alpha:: Float64 = Inf,
     indices_V:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(),
-    indices_U:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}())
+    indices_U:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(),
+    errors_calculation::Bool = false)
 
 
     r, n = size(V)
@@ -131,6 +130,10 @@ function coordinate_descent(
 
     m, r = size(U)
     U_t = zeros(m, r)
+
+    if errors_calculation
+        errors = []
+    end
 
     if !isempty(indices_V)
         for idx_v in indices_V
@@ -165,6 +168,10 @@ function coordinate_descent(
             error = norm(M - (U * V).^2)
         end
         
+        if errors_calculation
+            push!(errors, norm(M - (U * V).^2)/norm(M))
+        end
+        
         if ite % 10 == 0 && alpha <= 1
             if error > alpha * prev_error
                 break
@@ -177,7 +184,12 @@ function coordinate_descent(
         end
         
     end
-    return U, V
+    
+    if errors_calculation
+        return errors
+    else
+        return U, V
+    end
 end
 
 function coordinate_descent_extrapoled(
@@ -188,13 +200,22 @@ function coordinate_descent_extrapoled(
     max_time:: Int = 0,
     alpha:: Float64 = Inf,
     indices_V:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(),
-    indices_U:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}())
+    indices_U:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(),
+    beta_bis::Float64 = 0.75,
+    eta::Float64 = 1.5,
+    gamma::Float64 = 1.05,
+    gamma_bis::Float64 = 1.01,
+    errors_calculation:: Bool = false)
 
     r, n = size(V)
     V_t = zeros(r, n)
 
     m, r = size(U)
     U_t = zeros(m, r)
+
+    if errors_calculation
+        errors = []
+    end
 
     if !isempty(indices_V)
         for idx_v in indices_V
@@ -222,16 +243,19 @@ function coordinate_descent_extrapoled(
     Vp = copy(V)
     Vtemp = copy(V)
     Utemp = copy(U)
-    beta = 0.7
+    beta = 1
+    beta_pred = beta_bis
+
     for ite in 1:max_iterations
-        V = optimise_v(M, U, V + beta * (V - Vp), V_t)
+        V = optimise_v(M, U, V + beta_bis * (V - Vp), V_t)
         Vp = copy(Vtemp)
-        U = optimise_v(M', V', U' + beta * (U' - Up'), U_t')'
+        U = optimise_v(M', V', U' + beta_bis * (U' - Up'), U_t')'
         Up = copy(Utemp)
         Utemp = copy(U)
         Vtemp = copy(V)
 
         error = norm(M - (U * V).^2)
+        
 
         if error > norm(M - (Up*Vp).^2)
             V = optimise_v(M, Up, Vp, V_t)
@@ -239,6 +263,18 @@ function coordinate_descent_extrapoled(
             Utemp = copy(U)
             Vtemp = copy(V)
             error = norm(M - (U*V).^2)
+            beta_copy = copy(beta_bis)
+            beta_bis = beta_bis/eta
+            beta = beta_pred
+            beta_pred = beta_copy
+        else
+            beta_pred = beta_bis
+            beta_bis = min(beta, gamma * beta_bis)
+            beta = min(1, gamma_bis * beta)
+        end
+
+        if errors_calculation
+            push!(errors, error/norm(M))
         end
 
         if ite % 10 == 0 && alpha <= 1
@@ -252,21 +288,10 @@ function coordinate_descent_extrapoled(
             break
         end           
     end
-    return U, V
-end
 
-#= Random.seed!(2028)
-m = n = 250
-r = 3
-U = randn(m, r)
-V = randn(r, n)
-M = (U*V).^2
-U, V = init_matrix(M, 3, "random")
-U_1 = copy(U)
-V_1 = copy(V)
-U_2 = copy(U)
-V_2 = copy(V)
-U, V = coordinate_descent_extrapoled(100000, M, U_1, V_1, alpha = 0.9999)
-println(norm(M-(U*V).^2)/norm(M)) =#
-#= U, V = coordinate_descent(100000, M, U_2, V_2, alpha = 0.9999)
-println(norm(M-(U*V).^2)/norm(M)) =#
+    if errors_calculation
+        return errors
+    else
+        return U, V
+    end
+end

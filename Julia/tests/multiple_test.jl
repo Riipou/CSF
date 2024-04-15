@@ -20,7 +20,7 @@ function squared_factorisation(
         M = (U * V).^2
         U_rand, V_rand = init_matrix(M, r, "random")
         U_svd, V_svd = init_matrix(M, r, "SVD")
-        U_rand, V_rand = coordinate_descent(max_iterations,M,U_rand,V_rand,alpha=alpha)
+        U_rand, V_rand = coordinate_descent(max_iterations,M,U_rand,V_rand,alpha = alpha)
         U_svd, V_svd = coordinate_descent(max_iterations, M, U_svd, V_svd, alpha = alpha)
 
         if norm(M - (U_rand * V_rand).^2) / norm(M) < 1e-3
