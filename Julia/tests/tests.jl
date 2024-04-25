@@ -8,7 +8,8 @@ using Dates
 # Execution of tests
 start = time()
 # Comparing CD and extrapoled CD 
-#= extrapoledCD_test() =#
+#= extrapolation_parameters() =#
+extrapoledCD_test()
 # Test on euclidian distance matrices
 multiple_distance_matrix()
 # Test on slack matrices of regular n-gons
