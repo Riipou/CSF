@@ -1,6 +1,0 @@
-Matrix nxn : 5
-for random method accuracy=38.0%
-for svd accuracy=94.0%
-Matrix nxn : 10
-for random method accuracy=56.00000000000001%
-for svd accuracy=98.0%

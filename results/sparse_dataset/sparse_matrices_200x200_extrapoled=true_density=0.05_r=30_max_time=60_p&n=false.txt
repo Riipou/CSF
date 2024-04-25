@@ -1,0 +1,12 @@
+CSF (Random initialization)
+average error = 34.832911996874174%
+standard deviation = 0.4561672910661552%
+CSF (SVD initialization)
+error = 34.74157321153748%
+standard deviation = 0.5412100379515975%
+NMF (Random initialization)
+average error = 76.68814574056036%
+standard deviation = 0.35335195979548384%
+NMF (SVD initialization)
+error = 76.69827206252478%
+standard deviation = 0.32070303592254%

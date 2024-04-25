@@ -1,28 +1,82 @@
+using LinearAlgebra
+
 function BLS(
     max_iterations::Int,
     M::Matrix,
     U::Matrix,
-    V::Matrix)
+    V::Matrix;
+    alpha:: Float64 = Inf,
+    beta_bis::Float64 = 0.75,
+    eta::Float64 = 1.5,
+    gamma::Float64 = 1.05,
+    gamma_bis::Float64 = 1.01)
 
     m, r = size(U)
     r, n = size(V)
     U = convert(Matrix{Float64}, U)
     V = convert(Matrix{Float64}, V)
+    if alpha < 1
+        prev_error = norm(M - (U * V).^2)
+    end
+    # Define alpha lists
     alpha_V = []
     alpha_U = []
+    # Step of GD
     step = 1.1
+    # Parameters of extrapoled GD
+    beta = 1
+    beta_pred = beta_bis
+    Up = copy(U)
+    Vp = copy(V)
+    Vtemp = copy(V)
+    Utemp = copy(U)
+    # Compute alpha lists
     for j in 1:n
         push!(alpha_V, step * (norm(V[:,j])/norm(grad(U, V[:,j], M[:,j]))))
     end
     for i in 1:m
         push!(alpha_U, step * (norm(U[i,:])/norm(grad(V', U[i,:], M[i,:]))))
     end
-    for _ in 1:max_iterations
+    # Extrapoled GD
+    for ite in 1:max_iterations
         for j in 1:n
-            V[:,j], alpha_V[j] = update_x(alpha_V[j], U, V[:,j], M[:,j])
+            V[:,j], alpha_V[j] = update_x(alpha_V[j], U, V[:,j] + beta_bis * (V[:,j] - Vp[:,j]), M[:,j])
         end
+        Vp = copy(Vtemp)
         for i in 1:m
-            U[i,:], alpha_U[i] = update_x(alpha_U[i], V', U[i,:], M[i,:])
+            U[i,:], alpha_U[i] = update_x(alpha_U[i], V', U[i,:] + beta_bis * (U[i,:] - Up[i,:]), M[i,:])
+        end
+        Up = copy(Utemp)
+        Utemp = copy(U)
+        Vtemp = copy(V)
+
+        error = norm(M - (U * V).^2)
+
+        if error > norm(M - (Up*Vp).^2)
+            for j in 1:n
+                V[:,j], alpha_V[j] = update_x(alpha_V[j], U, V[:,j], M[:,j])
+            end
+            for i in 1:m
+                U[i,:], alpha_U[i] = update_x(alpha_U[i], V', U[i,:], M[i,:])
+            end
+            Utemp = copy(U)
+            Vtemp = copy(V)
+            error = norm(M - (U*V).^2)
+            beta_copy = copy(beta_bis)
+            beta_bis = beta_bis/eta
+            beta = beta_pred
+            beta_pred = beta_copy
+        else
+            beta_pred = beta_bis
+            beta_bis = min(beta, gamma * beta_bis)
+            beta = min(1, gamma_bis * beta)
+        end
+
+        if ite % 10 == 0 && alpha <= 1
+            if error > alpha * prev_error
+                break
+            end
+            prev_error = norm(M - (U * V).^2)
         end
     end
 

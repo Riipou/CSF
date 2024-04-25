@@ -201,7 +201,7 @@ function coordinate_descent_extrapoled(
     alpha:: Float64 = Inf,
     indices_V:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(),
     indices_U:: Vector{Tuple{Int, Int}} = Vector{Tuple{Int, Int}}(),
-    beta_bis::Float64 = 0.75,
+    beta_bis::Float64 = 0.3,
     eta::Float64 = 1.5,
     gamma::Float64 = 1.05,
     gamma_bis::Float64 = 1.01,

@@ -46,6 +46,7 @@ function CSFandNMF_test(
     max_time::Int,
     r::Int,
     nb_tests::Int,
+    extrapoled::Bool,
     dataset::String;
     max_iterations::Int = 100000,
     submatrix::Bool = false,
@@ -62,7 +63,7 @@ function CSFandNMF_test(
         M = M[1:50,1:100]
     end
 
-    open("results/sparse_dataset/$(dataset)_r=$(r)_submatrix=$(submatrix)_max_time=$(max_time)_p&n=$(p_and_n).txt", "w") do file
+    open("results/sparse_dataset/$(dataset)_r=$(r)_extrapoled=$(extrapoled)_submatrix=$(submatrix)_max_time=$(max_time)_p&n=$(p_and_n).txt", "w") do file
 
         # Definition of variables
         errors = []
@@ -78,7 +79,11 @@ function CSFandNMF_test(
         for i in 1:nb_tests
             println(i)
             U, V = init_matrix(M, r, "random", p_and_n = p_and_n)
-            U, V = coordinate_descent(max_iterations, M, U, V, max_time = max_time)
+            if extrapoled
+                U, V = coordinate_descent_extrapoled(max_iterations, M, U, V, max_time = max_time)
+            else
+                U, V = coordinate_descent(max_iterations, M, U, V, max_time = max_time)
+            end
             if i == 1
                 worst_U = U
                 worst_V = V
@@ -113,7 +118,11 @@ function CSFandNMF_test(
         # SVD initialization
         U_0, V_0 = init_matrix(M, r, "SVD")
         # CSF
-        U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
+        if extrapoled
+            U, V = coordinate_descent_extrapoled(max_iterations, M, U_0, V_0, max_time = max_time)
+        else
+            U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
+        end
         # NMF
         W = copy(U_0)
         H = copy(V_0)
@@ -151,7 +160,7 @@ function CSFandNMF_test(
         # Create a dictionary containing the matrices
         data_dict = Dict("bU" => best_U, "bV" => best_V,"M" => (best_U * best_V).^2,"X" => best_W*best_H, "wU" => worst_U, "wV" => worst_V)
         # Save the dictionary to a .mat file
-        matwrite("results/sparse_dataset/matrices/$(dataset)_r=$(r)_submatrix=$(submatrix)_max_time=$(max_time)_p&n=$(p_and_n).mat", data_dict)
+        matwrite("results/sparse_dataset/matrices/$(dataset)_r=$(r)_extrapoled=$(extrapoled)_submatrix=$(submatrix)_max_time=$(max_time)_p&n=$(p_and_n).mat", data_dict)
 
         end
 end
@@ -159,7 +168,8 @@ end
 function sparse_matrices(
     nb_tests:: Int,
     size::Int,
-    r::Int, 
+    r::Int,
+    extrapoled::Bool, 
     max_time::Int;
     density::Float64 = 0.05, 
     max_iterations::Int = 100000,
@@ -170,7 +180,7 @@ function sparse_matrices(
     # Choice of random seed
     Random.seed!(2024)
 
-    open("results/sparse_dataset/sparse_matrices_$(size)x$(size)_density=$(density)_r=$(r)_max_time=$(max_time)_p&n=$(p_and_n).txt", "w") do file
+    open("results/sparse_dataset/sparse_matrices_$(size)x$(size)_extrapoled=$(extrapoled)_density=$(density)_r=$(r)_max_time=$(max_time)_p&n=$(p_and_n).txt", "w") do file
 
         # Definition of variables
         errors = []
@@ -235,8 +245,13 @@ function sparse_matrices(
             
             # CSF
 
-            U, V = init_matrix(M, r, "random", p_and_n = p_and_n)
-            U, V = coordinate_descent(max_iterations, M, U, V, max_time = max_time)
+            U_0, V_0 = init_matrix(M, r, "random", p_and_n = p_and_n)
+            if extrapoled
+                U, V = coordinate_descent_extrapoled(max_iterations, M, U_0, V_0, max_time = max_time)
+            else
+                U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
+            end
+
             if i == 1
                 worst_U = U
                 worst_V = V
@@ -258,7 +273,11 @@ function sparse_matrices(
                 # SVD initialization
                 U_0, V_0 = init_matrix(M, r, "SVD")
                 # CSF
-                U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
+                if extrapoled
+                    U, V = coordinate_descent_extrapoled(max_iterations, M, U_0, V_0, max_time = max_time)
+                else
+                    U, V = coordinate_descent(max_iterations, M, U_0, V_0, max_time = max_time)
+                end
                 # NMF
                 W = copy(U_0)
                 H = copy(V_0)
@@ -314,64 +333,76 @@ function sparse_matrices(
         # Create a dictionary containing the matrices
         data_dict = Dict("bU" => best_U, "bV" => best_V, "wU" => worst_U, "wV" => worst_V)
         # Save the dictionary to a .mat file
-        matwrite("results/sparse_dataset/matrices/sparse_matrices_$(size)x$(size)_r=$(r)_max_time=$(max_time)_p&n=$(p_and_n).mat", data_dict)
+        matwrite("results/sparse_dataset/matrices/sparse_matrices_$(size)x$(size)_extrapoled=$(extrapoled)_r=$(r)_max_time=$(max_time)_p&n=$(p_and_n).mat", data_dict)
     end
 end
 
-# datasets = ["CBCL", "CBCLfacialfeatures", "TDT2"]
-# for dataset in datasets
-#     info_dataset(dataset)
-# end
+function alldatainfos()
+    datasets = ["CBCL", "CBCLfacialfeatures", "TDT2"]
+    for dataset in datasets
+        info_dataset(dataset)
+    end
+end
 
-r_values = [10,20,49]
-dataset = "CBCL"
-for r in r_values
+function CBCL_test(
+    extrapoled::Bool = true)
+    r_values = [10,20,49]
+    dataset = "CBCL"
+    for r in r_values
+        max_time = 60
+        nb_tests_value = 10
+        CSFandNMF_test(max_time, r, nb_tests_value, extrapoled, dataset, p_and_n = false)
+    end
+end
+
+function TDT2_test(
+    extrapoled::Bool = true)
+    r_values = [10, 20]
+    dataset = "TDT2"
+    for r in r_values
+        max_time = 60
+        nb_tests_value = 10
+        CSFandNMF_test(max_time, r, nb_tests_value, extrapoled, dataset, p_and_n = false)
+    end
+end
+
+function CBCLfacialfeatures_test(
+    extrapoled::Bool = true)
+    r_values = [10, 20]
+    dataset = "CBCLfacialfeatures"
+    for r in r_values
+        max_time = 60
+        nb_tests_value = 10
+        CSFandNMF_test(max_time, r, nb_tests_value, extrapoled, dataset, p_and_n = false)
+    end
+end
+
+function sparse_matrices_test(
+    extrapoled::Bool = true)
+    r_values = [10, 20, 30, 40]
+    for r in r_values
+        max_time = 60
+        nb_tests_value = 10
+        sparse_matrices(nb_tests_value, 200, r, extrapoled, max_time, p_and_n = false)
+    end
+end
+function sparse_matrices_test2(
+    extrapoled::Bool = true)
+    r_value = 10
     max_time = 60
     nb_tests_value = 10
-    CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = false)
-end
-
-r_values = [10, 20]
-dataset = "TDT2"
-for r in r_values
+    density = [ 0.50, 0.40, 0.30, 0.20, 0.10, 0.01]
+    for d in density
+        sparse_matrices(nb_tests_value, 200, r_value, extrapoled, max_time, density = d, svd = false, p_and_n = false)
+    end 
+    r_value = 10
     max_time = 60
     nb_tests_value = 10
-    CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = false)
+    sizes = [100, 250, 500, 750, 1000]
+    for size in sizes
+        sparse_matrices(nb_tests_value, size, r_value, extrapoled, max_time, svd = false, p_and_n = false)
+    end
 end
-
-r_values = [10, 20]
-dataset = "CBCLfacialfeatures"
-for r in r_values
-    max_time = 60
-    nb_tests_value = 10
-    CSFandNMF_test(max_time, r, nb_tests_value, dataset, p_and_n = false)
-end
-
-r_values = [10,20]
-
-for r in r_values
-    max_time = 60
-    nb_tests_value = 10
-    sparse_matrices(nb_tests_value, 200, r, max_time, p_and_n = false)
-end
-
-r_value = 10
-max_time = 60
-nb_tests_value = 10
-density = [ 0.50, 0.40, 0.30, 0.20, 0.10, 0.01]
-for d in density
-    sparse_matrices(nb_tests_value, 200, r_value, max_time, density = d, svd = false, p_and_n = false)
-end 
-
-
-r_value = 10
-max_time = 60
-nb_tests_value = 10
-sizes = [100, 250, 500, 750, 1000]
-for size in sizes
-    sparse_matrices(nb_tests_value, size, r_value, max_time, svd = false, p_and_n = false)
-end
-
 
 # CSF = [69.02355281775884, 39.62659232108218, 24.74901295645741, 15.875810104379825]
 # NMF = [89.6452978286602, 81.00895769209575, 72.72404199224063, 64.63757274336808]

@@ -1,8 +1,0 @@
-Matrix mxn : 5
-accuracy=70.0%
-Matrix mxn : 10
-accuracy=90.0%
-Matrix mxn : 50
-accuracy=90.0%
-Matrix mxn : 100
-accuracy=90.0%
