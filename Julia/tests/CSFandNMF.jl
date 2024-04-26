@@ -403,14 +403,3 @@ function sparse_matrices_test2(
         sparse_matrices(nb_tests_value, size, r_value, extrapoled, max_time, svd = false, p_and_n = false)
     end
 end
-
-# CSF = [69.02355281775884, 39.62659232108218, 24.74901295645741, 15.875810104379825]
-# NMF = [89.6452978286602, 81.00895769209575, 72.72404199224063, 64.63757274336808]
-# rank = [10, 20, 30, 40]
-
-# plot(rank, CSF, label="CSF", xlabel="Rank", ylabel="Average Relative Error", linewidth=2, linestyle=:solid, marker=:circle, markersize=5)
-# plot!(rank, NMF, label="NMF", linewidth=2, linestyle=:dash, marker=:square, markersize=5)
-# xlabel!("Rank", titlefont=font(30))
-# ylabel!("Average Relative Error", titlefont=font(30))
-# plot!(legendfontsize=30)
-# savefig("plot.png")

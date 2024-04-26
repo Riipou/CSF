@@ -3,6 +3,7 @@ include("multiple_slackgon.jl")
 include("CD_extrapoled_test.jl")
 include("multiple_test.jl")
 include("CSFandNMF.jl")
+include("TSVD_test.jl")
 using Dates
 
 # Execution of tests
@@ -23,4 +24,9 @@ TDT2_test()
 CBCLfacialfeatures_test()
 sparse_matrices_test()
 sparse_matrices_test2()
+# TSVD tests
+tsvd_datasets()
+sparse_rank_tests()
+sparse_size_tests()
+sparse_density_tests()
 println(time()-start)

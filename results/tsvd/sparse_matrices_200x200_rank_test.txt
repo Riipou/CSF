@@ -1,0 +1,6 @@
+r = 10
+error = 88.6895393412497%
+standard deviation = 0.17486769566375274%
+r = 20
+error = 80.06146585019577%
+standard deviation = 0.24229490336496068%
