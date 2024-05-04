@@ -215,6 +215,7 @@ function coordinate_descent_extrapoled(
 
     if errors_calculation
         errors = []
+        times = []
     end
 
     if !isempty(indices_V)
@@ -275,6 +276,7 @@ function coordinate_descent_extrapoled(
 
         if errors_calculation
             push!(errors, error/norm(M))
+            push!(times, time()-start)
         end
 
         if ite % 10 == 0 && alpha <= 1
@@ -290,7 +292,7 @@ function coordinate_descent_extrapoled(
     end
 
     if errors_calculation
-        return errors
+        return errors, times
     else
         return U, V
     end

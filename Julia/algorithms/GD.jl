@@ -5,11 +5,22 @@ function BLS(
     M::Matrix,
     U::Matrix,
     V::Matrix;
+    max_time:: Int = 0,
     alpha:: Float64 = Inf,
-    beta_bis::Float64 = 0.75,
+    beta_bis::Float64 = 0.5,
     eta::Float64 = 1.5,
-    gamma::Float64 = 1.05,
-    gamma_bis::Float64 = 1.01)
+    gamma::Float64 = 1.1,
+    gamma_bis::Float64 = 1.05,
+    errors_calculation::Bool = false)
+
+    if max_time == 0
+        max_time = Inf
+    end
+
+    if errors_calculation
+        errors = []
+        times = []
+    end
 
     m, r = size(U)
     r, n = size(V)
@@ -37,6 +48,8 @@ function BLS(
     for i in 1:m
         push!(alpha_U, step * (norm(U[i,:])/norm(grad(V', U[i,:], M[i,:]))))
     end
+
+    start = time()
     # Extrapoled GD
     for ite in 1:max_iterations
         for j in 1:n
@@ -72,15 +85,28 @@ function BLS(
             beta = min(1, gamma_bis * beta)
         end
 
+        if errors_calculation
+            push!(errors, norm(M - (U * V).^2)/norm(M))
+            push!(times, time()-start)
+        end
+
         if ite % 10 == 0 && alpha <= 1
             if error > alpha * prev_error
                 break
             end
             prev_error = norm(M - (U * V).^2)
         end
+
+        if time()-start >= max_time
+            break
+        end 
     end
 
-    return U, V
+    if errors_calculation
+        return errors, times
+    else
+        return U, V
+    end
 end
 
 function update_x(alpha, A, x, b)

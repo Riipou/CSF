@@ -1,0 +1,6 @@
+CD
+average error = 68.96444005762034%
+standard deviation = 0.04824682997530169%
+GD
+average error = 68.98373242316234%
+standard deviation = 0.07575098344887925%

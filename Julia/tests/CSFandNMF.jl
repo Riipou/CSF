@@ -386,6 +386,7 @@ function sparse_matrices_test(
         sparse_matrices(nb_tests_value, 200, r, extrapoled, max_time, p_and_n = false)
     end
 end
+
 function sparse_matrices_test2(
     extrapoled::Bool = true)
     r_value = 10

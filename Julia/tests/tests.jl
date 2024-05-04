@@ -10,23 +10,23 @@ using Dates
 start = time()
 # Comparing CD and extrapoled CD 
 #= extrapolation_parameters() =#
-extrapoledCD_test()
+#= extrapoledCD_test() =#
 # Test on euclidian distance matrices
-multiple_distance_matrix()
+#= multiple_distance_matrix() =#
 # Test on slack matrices of regular n-gons
 multiple_slackgon_matrix()
 # Tests on synthetic data
-multiple_test()
-random_test()
+#= multiple_test()
+random_test() =#
 # Data set tests
-CBCL_test()
+#= CBCL_test()
 TDT2_test()
 CBCLfacialfeatures_test()
 sparse_matrices_test()
-sparse_matrices_test2()
+sparse_matrices_test2() =#
 # TSVD tests
-tsvd_datasets()
+#= tsvd_datasets()
 sparse_rank_tests()
 sparse_size_tests()
-sparse_density_tests()
+sparse_density_tests() =#
 println(time()-start)

@@ -74,7 +74,7 @@ end
 # file_name="CBCL.png"
 # save(file_name,matrice_img)
 
-file_path = "results/sparse_dataset/matrices/CBCL_r=49_submatrix=false_max_time=60.mat"
+file_path = "results/sparse_dataset/matrices/CBCL_r=49_extrapoled=true_submatrix=false_max_time=60_p&n=false.mat"
 mat = matread(file_path)
 V = mat["M"]
 matrice_img=affichage(V[:,1:15],5,19,19,1)
