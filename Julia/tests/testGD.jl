@@ -84,10 +84,11 @@ function extrapolation_parameters_GD()
     beta_bis = 0.5
     r = 10
     eta = 1.5
+    step_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3]
     plot(xlabel="Iterations", ylabel="Error", title="Error vs Iterations", legend=true)
     ylims!(0.04, 0.07)
     xlims!(1,l)
-    for beta_bis in beta_bis_list
+    for step in step_list
         #= if gamma == 1.01
             gamma_bis = 1.005
         elseif gamma == 1.05
@@ -100,12 +101,12 @@ function extrapolation_parameters_GD()
         V = randn(r,200)
         M = (U*V).^2
         errors_2_m = zeros(l)
-        open("results/extrapoled_GD/parameters/extrapolation_parameters_beta=$(beta_bis)_gamma=$(gamma)_gammabis=$(gamma_bis)_eta=$(eta).txt", "w") do file
+        open("results/extrapoled_GD/parameters/step=$(step)_parameters.txt", "w") do file
             for _ in nb_tests
                 U, V = init_matrix(M, r, "random", p_and_n = false)
                 U_1 = copy(U)
                 V_1 = copy(V)
-                errors_2, _ = BLS(100000, M, U_1, V_1, alpha = 0.9999, errors_calculation = true, beta_bis = beta_bis, eta = eta, gamma = gamma, gamma_bis = gamma_bis)
+                errors_2, _ = BLS(100000, M, U_1, V_1, alpha = 0.9999, errors_calculation = true, step = step)
                 for i in 1:l
                     errors_2_m[i] += errors_2[i]
                 end
@@ -115,11 +116,11 @@ function extrapolation_parameters_GD()
             for i in 1:l
                 write(file, "($(i),$(errors_2_m[i]))\n")
             end
-            plot!(1:length(errors_2_m), errors_2_m, label="beta=$(beta_bis)_gamma=$(gamma)_gammabis=$(gamma_bis)_eta=$(eta)")
+            plot!(1:length(errors_2_m), errors_2_m, label="step=$(step)")
             display(plot!)
         end
     end
-    savefig("results/extrapoled_GD/parameters/extrapolation_parameters.png")
+    savefig("results/extrapoled_GD/parameters/step_parameters.png")
 end
 
 function GDandCD_comparison(
@@ -207,4 +208,4 @@ function multipleGD_slackgon_matrix()
     end
 end
 
-GDandCD_comparison(100.0, 20, "CBCL", p_and_n = false)
+extrapolation_parameters_GD()

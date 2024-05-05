@@ -5,6 +5,7 @@ function BLS(
     M::Matrix,
     U::Matrix,
     V::Matrix;
+    step::Float64 = 1.1,
     max_time:: Int = 0,
     alpha:: Float64 = Inf,
     beta_bis::Float64 = 0.5,
@@ -32,8 +33,6 @@ function BLS(
     # Define alpha lists
     alpha_V = []
     alpha_U = []
-    # Step of GD
-    step = 1.1
     # Parameters of extrapoled GD
     beta = 1
     beta_pred = beta_bis
