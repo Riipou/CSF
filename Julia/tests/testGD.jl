@@ -136,7 +136,6 @@ function GDandCD_comparison(
     # Open data set
     M = open_dataset(dataset)
 
-    l = 150
     plot(xlabel="Time", ylabel="Error", title="Error vs Time", legend=true)
     ylims!(0.0, 1.0)
     xlims!(0.0, 60.0)
@@ -145,16 +144,22 @@ function GDandCD_comparison(
     U = randn(m, r)
     V = randn(r, n)
     M = (U * V).^2 =#
-
+    
+    max_time = 70
+    U_0, V_0 = init_matrix(M, r, "random", p_and_n = false)
     open("results/GDandCD/$(dataset)_comparison_r=$(r)_p&n=$(p_and_n).txt", "w") do file
+        errors_CD, times_CD = coordinate_descent_extrapoled(max_iterations, M, U_0, V_0, max_time = max_time, errors_calculation = true)
+        errors_GD, times_GD = BLS(max_iterations, M, U_0, V_0, max_time = max_time, errors_calculation = true)
         write(file, "Error CD :\n")
-        for i in 1:l
+        l1 = length(errors_CD)
+        for i in 1:l1
             write(file, "($(times_CD[i]),$(errors_CD[i]))\n")
         end
         plot!(times_CD, errors_CD, label="CD")
         display(plot!)
         write(file, "Error GD :\n")
-        for i in 1:l
+        l2 = length(errors_GD)
+        for i in 1:l2
             write(file, "($(times_GD[i]),$(errors_GD[i]))\n")
         end
         plot!(times_GD, errors_GD, label="GD")
@@ -208,4 +213,53 @@ function multipleGD_slackgon_matrix()
     end
 end
 
-extrapolation_parameters_GD()
+function compareGD_extrapolation(M, r)
+    open("results/extrapoled_GD/extrapoled_vs_normalGD.txt", "w") do file
+        U, V = init_matrix(M, r, "random", p_and_n = false)
+        U_1 = copy(U)
+        V_1 = copy(V)
+        errors_1, _ = BLS_nonextrapoled(100000, M, U, V, alpha = 0.99999, errors_calculation = true)
+        errors_2, _ = BLS(100000, M, U_1, V_1, alpha = 0.99999, errors_calculation = true)
+        return errors_1, errors_2
+    end
+end
+
+function extrapoledGD_test()
+    # Choice of random seed
+    Random.seed!(2024)
+    open("results/extrapoled_GD/extrapoled_vs_normalGD_errors.txt", "w") do file
+        n = 200
+        r = 10
+        l = 150
+        nbr_test=10
+        errors_1_m = zeros(l)
+        errors_2_m = zeros(l)
+        for _ in 1:nbr_test
+            U = randn(n,r)
+            V = randn(r, n)
+            M = (U*V).^2
+            errors_1, errors_2 = compareGD_extrapolation(M, r)
+            for i in 1:l
+                errors_1_m[i] += errors_1[i]
+                errors_2_m[i] += errors_2[i]
+            end
+        end
+        errors_1_m /= nbr_test
+        errors_2_m /= nbr_test
+        plot(xlabel="Iterations", ylabel="Error", title="Error vs Iterations", legend=true)
+        ylims!(0.30, 0.75)
+        xlims!(1,l)
+        plot!(1:length(errors_1_m), errors_1_m, label="CD")
+        plot!(1:length(errors_2_m), errors_2_m, label="CD extrapoled")
+        for i in 1:l
+            write(file, "($(i), $(errors_1_m[i]))\n")
+        end
+        for i in 1:l
+            write(file, "($(i), $(errors_2_m[i]))\n")
+        end
+        display(plot!)
+        savefig("results/extrapoled_GD/mean_error_plot.png")
+    end
+end
+
+extrapoledGD_test()
