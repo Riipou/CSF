@@ -1,0 +1,2 @@
+accuracy for r = 6 : 0.33999999999999997%
+best error for r = 6 : 6.902703883761576e-5
