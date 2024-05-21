@@ -80,17 +80,17 @@ function fixed_slackgon_matrix(
     end
 end
 
-n = 8
-r = 6
+n = 9
+r = 8
 
 M, _ = slackngon(n)
-file_name = "slackngon_8x8_r=6_error=4.175785360688005e-8"
+file_name = "9x9_r=8_best_error=1.4591756414634157e-7"
 # Path of initial U and V
 file_path = "results/fixed_variables/$(file_name).mat"
 # Load the .mat file
 data = matread(file_path)
-U = data["U"]
-V = data["V"]
+U = data["bU"]
+V = data["bV"]
 println("Matrix U:")
 # Print each row of U row by row
 for i in 1:size(U)[1]
