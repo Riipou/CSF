@@ -14,7 +14,7 @@ start = time()
 # Test on euclidian distance matrices
 #= multiple_distance_matrix() =#
 # Test on slack matrices of regular n-gons
-multiple_slackgon_matrix()
+# multiple_slackgon_matrix()
 # Tests on synthetic data
 #= multiple_test()
 random_test() =#
@@ -29,4 +29,5 @@ sparse_matrices_test2() =#
 sparse_rank_tests()
 sparse_size_tests()
 sparse_density_tests() =#
+multiple_slackgon_matrix_big_test()
 println(time()-start)
